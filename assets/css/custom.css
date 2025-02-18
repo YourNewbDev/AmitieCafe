@@ -1,0 +1,20 @@
+#bleuBean {
+    background-color: #EFE7E3;
+}
+
+#bleuBeanText {
+    color: #273852;
+    font-family: serif;
+}
+
+.footer {
+    position: sticky;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #EFE7E3;
+    color: #273852;
+}
+.footer .text-dark {
+    color: #273852 !important;
+}
