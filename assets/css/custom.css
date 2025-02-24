@@ -15,6 +15,34 @@
     background-color: #EFE7E3;
     color: #273852;
 }
+
 .footer .text-dark {
     color: #273852 !important;
+}
+
+.list-group-item {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.bg-custom {
+    background-color: #273852;
+}
+
+.text-custom {
+    color: #273852;
+}
+
+.operator-btn {
+    background-color: #273852 !important;
+    color: white !important;
+    border: none;
+}
+
+.operator-btn:hover,
+.operator-btn:focus {
+    background-color: #273852 !important;
+    /* Keeps the same color on hover */
+    color: white !important;
 }
