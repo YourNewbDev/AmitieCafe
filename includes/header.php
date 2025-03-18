@@ -19,6 +19,7 @@ if (!isset($pageTitle)) {
     <link rel="stylesheet" href="/AmitieCafe/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/AmitieCafe/assets/css/custom.css">
     <link rel="icon" href="/AmitieCafe/assets/image/Amitie.png" type="image/x-icon">
+    <link rel="stylesheet" href="/AmitieCafe/assets/css/datatables.min.css">
 </head>
 
 <body>

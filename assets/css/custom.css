@@ -46,3 +46,14 @@
     /* Keeps the same color on hover */
     color: white !important;
 }
+
+/* Remove arrows in Bootstrap number input */
+.form-control[type="number"]::-webkit-inner-spin-button,
+.form-control[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.form-control[type="number"] {
+    -moz-appearance: textfield;
+}
