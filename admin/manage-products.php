@@ -36,8 +36,16 @@ try {
     $stmt = $pdo->query("SELECT * FROM tblcategory");
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $stmt = $pdo->query("SELECT * FROM tblproductsize");
-    $product_sizes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->query("SHOW COLUMNS FROM tblproductsize WHERE Field = 'product_size'");
+    $product_sizes = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($product_sizes && isset($product_sizes['Type'])) {
+        // Extract ENUM values
+        preg_match("/^enum\((.*)\)$/", $product_sizes['Type'], $matches);
+        // Parse ENUM values
+        $enumValues = str_getcsv($matches[1], ",", "'");  
+    }
+
 } catch (PDOException $err) {
     die("Query failed: " . $err->getMessage());
 }
@@ -174,14 +182,16 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Size</label>
-                        <select class="form-control" name="product_size_id" required>
+                        <select class="form-control" name="product_size" required>
                             <option value="">Select a size</option>
-                            <?php foreach ($product_sizes as $product_size) : ?>
-                                <option value="<?= $product_size['product_size'] ?>" <?= ($selected_product_size == $product_size['product_size_id']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($product_size['product_size'] . ' - ₱' . number_format($product_size['product_size_price'], 2)) ?>
-                                </option>
+                            <?php foreach ($enumValues as $value) : ?>
+                                <option value="<?= htmlspecialchars($value) ?>"><?= htmlspecialchars($value) ?></option>
                             <?php endforeach; ?>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Size Price</label>
+                        <input type="number" class="form-control" name="product_size_price" required onkeydown="return blockInvalidInput(event)">
                     </div>
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn btn-primary mx-3">Save</button>

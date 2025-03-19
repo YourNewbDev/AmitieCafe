@@ -5,7 +5,6 @@ $required_role = "OWNER";
 require __DIR__ . '/../../actions/auth.php';
 
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST['product_name']) ?? null;
     $category = trim($_POST['category_id']) ?? null;
@@ -17,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
 
-        $stmt = $pdo->prepare("INSERT INTO tblproduct (product_name, category_id, product_desc, product_price, product_cost) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO tblproduct (product_name, category_id, product_desc, product_price, product_cost, updated_at) VALUES (?, ?, ?, ?, ?, NOW())");
         $stmt->execute([$name, $category, $desc, $price, $cost]);
 
         $product_id = $pdo->lastInsertId();
