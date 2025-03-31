@@ -5,12 +5,28 @@ $(document).ready(function() {
 
     var table = $('#productsTable').DataTable({
         "paging": true,
-        "pageLength": 10, 
+        "pageLength": 5, 
         "lengthChange": false, 
         "searching": true, 
         "ordering": true, 
         "info": true, 
         "autoWidth": false,
+    });
+});
+
+$(document).ready(function() {
+    if ($.fn.DataTable.isDataTable('#categoriesTable')) {
+        $('#categoriesTable').DataTable().destroy();
+    }
+
+    var table = $('#categoriesTable').DataTable({
+        "paging": true,
+        "pageLength": 5, 
+        "lengthChange": false, 
+        "searching": true, 
+        "ordering": true, 
+        "info": true, 
+        "autoWidth": true,
     });
 });
 
