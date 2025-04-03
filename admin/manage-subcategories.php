@@ -91,14 +91,15 @@ $selected_category = $_POST['category_id'] ?? null;
                                 <td class="text-center"><?= htmlspecialchars($subcategory['category_name']) ?></td>
                                 <td class="text-center">
                                     <div class="">
-                                        <button type="button" class="btn edit-btn" data-bs-toggle="modal" data-bs-target="#editCategoryModal"
-                                            data-bs-category-id="<?= $subcategory['category_id'] ?>"
-                                            data-bs-category-name="<?= htmlspecialchars($subcategory['category_name']) ?>">
+                                        <button type="button" class="btn edit-btn" data-bs-toggle="modal" data-bs-target="#editSubcategoryModal"
+                                            data-bs-subcategory-id="<?= $subcategory['subcategory_id'] ?>"
+                                            data-bs-subcategory-name="<?= htmlspecialchars($subcategory['subcategory_name']) ?>"
+                                            data-bs-category-id="<?= htmlspecialchars($subcategory['category_id']) ?>">
                                             <img src="../assets/image/edit.svg" alt="Edit" class="" style="max-width: 2em;">
                                         </button>
-                                        <button type="button" class="btn delete-btn" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal"
-                                            data-bs-category-id="<?= $subcategory['category_id'] ?>"
-                                            data-bs-category-name="<?= htmlspecialchars($subcategory['category_name']) ?>">
+                                        <button type="button" class="btn delete-btn" data-bs-toggle="modal" data-bs-target="#deleteSubcategoryModal"
+                                            data-bs-subcategory-id="<?= $subcategory['subcategory_id'] ?>"
+                                            data-bs-subcategory-name="<?= htmlspecialchars($subcategory['subcategory_name']) ?>">
                                             <img src="../assets/image/delete.svg" alt="Delete" class="img-responsive" style="max-width: 2em;">
                                         </button>
                                     </div>
@@ -157,11 +158,22 @@ $selected_category = $_POST['category_id'] ?? null;
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="/AmitieCafe/admin/categories/edit-category.php">
+                <form method="POST" action="/AmitieCafe/admin/subcategories/edit-subcategory.php">
                     <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" class="form-control" name="category_name" id="editCategoryName" required>
-                        <input type="hidden" class="form-control" name="category_id" id="editCategoryId">
+                        <label class="form-label">Subcategory Name</label>
+                        <input type="text" class="form-control" name="subcategory_name" id="editSubcategoryName" required>
+                        <input type="hidden" class="form-control" name="subcategory_id" id="editSubcategoryId">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category Name</label>
+                        <select class="form-control" name="category_id" id="editCategoryId" required>
+                            <option value="">Select a category</option>
+                            <?php foreach ($categories as $category) : ?>
+                                <option value="<?= $category['category_id'] ?>">
+                                    <?= htmlspecialchars($category['category_name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn btn-primary mx-3">Save</button>
@@ -182,10 +194,10 @@ $selected_category = $_POST['category_id'] ?? null;
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p class="text-center">Are you sure you want to delete <strong id="deleteCategoryName"></strong>?</p>
-                <form method="POST" action="/AmitieCafe/admin/categories/delete-category.php">
+                <p class="text-center">Are you sure you want to delete <strong id="deleteSubcategoryName"></strong>?</p>
+                <form method="POST" action="/AmitieCafe/admin/subcategories/delete-subcategory.php">
                     <div class="mb-3">
-                        <input type="hidden" class="form-control" name="category_id" id="deleteCategoryId">
+                        <input type="hidden" class="form-control" name="subcategory_id" id="deleteSubcategoryId">
                     </div>
 
                     <div class="d-flex justify-content-center">
@@ -215,20 +227,29 @@ $selected_category = $_POST['category_id'] ?? null;
         document.body.addEventListener("click", function(event) {
             if (event.target.closest(".delete-btn")) {
                 let button = event.target.closest(".delete-btn");
-                let categoryId = button.getAttribute("data-bs-category-id");
-                let categoryName = button.getAttribute("data-bs-category-name");
+                let subcategoryId = button.getAttribute("data-bs-subcategory-id");
+                let subcategoryName = button.getAttribute("data-bs-subcategory-name");
 
-                document.getElementById("deleteCategoryId").value = categoryId;
-                document.getElementById("deleteCategoryName").textContent = categoryName;
+                document.getElementById("deleteSubcategoryId").value = subcategoryId;
+                document.getElementById("deleteSubcategoryName").textContent = subcategoryName;
             }
 
             if (event.target.closest(".edit-btn")) {
                 let button = event.target.closest(".edit-btn");
+                let subcategoryId = button.getAttribute("data-bs-subcategory-id");
+                let subcategoryName = button.getAttribute("data-bs-subcategory-name");
                 let categoryId = button.getAttribute("data-bs-category-id");
-                let categoryName = button.getAttribute("data-bs-category-name");
 
+                document.getElementById("editSubcategoryId").value = subcategoryId;
+                document.getElementById("editSubcategoryName").value = subcategoryName;
                 document.getElementById("editCategoryId").value = categoryId;
-                document.getElementById("editCategoryName").value = categoryName;
+                
+                // This will loop through the category dropdown to ensure the correct category is selected
+                // let categoryDropdown = document.getElementById("editCategoryId");
+
+                // for (let option of categoryDropdown.options) {
+                //     option.selected = option.value === categoryId;
+                // }
             }
         });
     });
