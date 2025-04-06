@@ -2,5 +2,5 @@
 A personal project for our own coffee shop business.
 
 # Tech Stack
-1. Backend - Vanilla PHP and SQL(PDO)
-2. Frontend - Vanilla Javascript, HTML, CSS, Bootstrap
+* Backend - Vanilla PHP and SQL(PDO)
+* Frontend - Vanilla Javascript, HTML, CSS, Bootstrap
