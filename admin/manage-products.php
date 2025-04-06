@@ -14,6 +14,10 @@ try {
         "SELECT
                 p.product_id,
                 p.product_name,
+                p.category_id,
+                c.category_id,
+                c.category_name,
+                p.subcategory_id,
                 sc.subcategory_id,
                 sc.subcategory_name,
                 p.product_desc,
@@ -25,6 +29,7 @@ try {
                 ps.product_size,
                 ps.product_size_price
             FROM tblproduct p
+            LEFT JOIN tblcategory c ON p.category_id = c.category_id
             LEFT JOIN tblsubcategory sc ON p.subcategory_id = sc.subcategory_id
             LEFT JOIN tblproductsize ps ON p.product_id = ps.product_id"
     );
@@ -35,6 +40,9 @@ try {
 
     $stmt = $pdo->query("SELECT * FROM tblcategory");
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmt = $pdo->query("SELECT * FROM tblsubcategory");
+    $subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $stmt = $pdo->query("SHOW COLUMNS FROM tblproductsize WHERE Field = 'product_size'");
     $product_sizes = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -50,6 +58,9 @@ try {
     die("Query failed: " . $err->getMessage());
 }
 
+
+// Fetch from Table to Modal
+$selected_subcategory = $_POST['subcategory_id'] ?? null;
 $selected_category = $_POST['category_id'] ?? null;
 $selected_product_size = $_POST['product_size_id'] ?? null;
 
@@ -103,6 +114,7 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                     <tr>
                         <th class="text-center">Name</th>
                         <th class="text-center">Category</th>
+                        <th class="text-center">Subcategory</th>
                         <th class="text-center">Description</th>
                         <th class="text-center">Price</th>
                         <th class="text-center">Cost</th>
@@ -117,6 +129,7 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                     <?php foreach ($products as $product) : ?>
                         <tr>
                             <td class="text-center"><?= htmlspecialchars($product['product_name']) ?></td>
+                            <td class="text-center"><?= htmlspecialchars($product['category_name']) ?></td>
                             <td class="text-center"><?= htmlspecialchars($product['subcategory_name']) ?></td>
                             <td class="text-center"><?= htmlspecialchars($product['product_desc']) ?></td>
                             <td class="text-center">₱<?= number_format($product['product_price']) ?></td>
@@ -164,11 +177,24 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                     <div class="mb-3">
                         <label class="form-label">Category</label>
                         <div class="d-flex">
-                            <select class="form-control" name="category_id" required>
+                            <select class="form-control" name="category_id" id="category_id" required>
                                 <option value="">Select a category</option>
                                 <?php foreach ($categories as $category) : ?>
                                     <option value="<?= $category['category_id'] ?>" <?= ($selected_category == $category['category_id']) ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($category['category_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subcategory</label>
+                        <div class="d-flex">
+                            <select class="form-control" name="subcategory_id" id="subcategory_id" required disabled>
+                                <option value="">Select a subcategory</option>
+                                <?php foreach ($subcategories as $subcategory) : ?>
+                                    <option value="<?= $subcategory['subcategory_id'] ?>" <?= ($selected_subcategory == $subcategory['subcategory_id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($subcategory['subcategory_name']) ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -256,6 +282,44 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
 
                 document.getElementById("deleteProductId").value = productId;
                 document.getElementById("deleteProductName").textContent = productName;
+            }
+        });
+
+        // Convert the PHP array into JSON format which JS understands
+        const allSubcategories = <?php echo json_encode($subcategories); ?>
+
+        // Reference for the select id's
+        const categorySelect = document.getElementById("category_id");
+        const subcategorySelect = document.getElementById("subcategory_id");
+
+        // When a category is selected or changed the function inside the event listener is executed
+        categorySelect.addEventListener("change", function() {
+            // Stores the selected category 
+            const selectedCategoryId = this.value;
+
+            // Clears the options back to default value in subcategory when a category selected changes
+            subcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
+            subcategorySelect.disabled = true;
+
+            // Checks if a selected category is not empty and executes insides the statement
+            if (selectedCategoryId) {
+                // Filters the subcategory array based on selected category_id
+                const filteredSubcategories = allSubcategories.filter(sub => sub.category_id === selectedCategoryId);
+                
+                // Begins a loop over the filtered subcategories array and iterates through each subcategory in the array
+                // and sub refers to the current subcategory being processed in the loop
+                filteredSubcategories.forEach(sub => {
+                    // Will create the subcategory based on the selected category
+                    const option = document.createElement("option");
+                    option.value = sub.subcategory_id;
+                    option.textContent = sub.subcategory_name;
+                    subcategorySelect.appendChild(option);
+                });
+
+                // Checks if there are any subcategories that match the selected category
+                if (filteredSubcategories.length > 0) {
+                    subcategorySelect.disabled = false;
+                }
             }
         });
     });

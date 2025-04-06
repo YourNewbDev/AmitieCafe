@@ -65,7 +65,7 @@ try {
                 <table id="categoriesTable" class="table">
                     <thead>
                         <tr>
-                            <th class="text-center">Name</th>
+                            <th class="text-center">Category</th>
                             <th class="text-center">Actions</th>
                         </tr>
                     </thead>
