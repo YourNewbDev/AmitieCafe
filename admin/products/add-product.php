@@ -13,7 +13,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = $_POST['product_price'] ?? null;
     $cost = $_POST['product_cost'] ?? null;
     $size = trim($_POST['product_size']) ?? 'Default Size';
-    $size_price = $_POST['product_size_price'] ?? 0;
 
     try {
 
@@ -27,8 +26,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $existingSize = $stmt->fetch();
 
         if (!$existingSize) {
-            $stmt = $pdo->prepare("INSERT INTO tblproductsize (product_id, product_size, product_size_price) VALUES (?, ?, ?)");
-            $stmt->execute([$product_id, $size, $size_price]);
+            $stmt = $pdo->prepare("INSERT INTO tblproductsize (product_id, product_size) VALUES (?, ?)");
+            $stmt->execute([$product_id, $size]);
         }
 
         $_SESSION['success_message'] = "Product successfully added!";
