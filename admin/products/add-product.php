@@ -7,6 +7,7 @@ require __DIR__ . '/../../actions/auth.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST['product_name']) ?? null;
+    $category = trim($_POST['category_id']) ?? null;
     $subcategory = trim($_POST['subcategory_id']) ?? null;
     $desc = trim($_POST['product_desc']) ?? null;
     $price = $_POST['product_price'] ?? null;
@@ -16,8 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
 
-        $stmt = $pdo->prepare("INSERT INTO tblproduct (product_name, subcategory_id, product_desc, product_price, product_cost, updated_at) VALUES (?, ?, ?, ?, ?, NOW())");
-        $stmt->execute([$name, $subcategory, $desc, $price, $cost]);
+        $stmt = $pdo->prepare("INSERT INTO tblproduct (product_name, category_id, subcategory_id, product_desc, product_price, product_cost, updated_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->execute([$name, $category, $subcategory, $desc, $price, $cost]);
 
         $product_id = $pdo->lastInsertId();
 

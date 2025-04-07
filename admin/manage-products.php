@@ -26,8 +26,7 @@ try {
                 p.created_at,
                 p.updated_at,
                 ps.product_size_id,
-                ps.product_size,
-                ps.product_size_price
+                ps.product_size
             FROM tblproduct p
             LEFT JOIN tblcategory c ON p.category_id = c.category_id
             LEFT JOIN tblsubcategory sc ON p.subcategory_id = sc.subcategory_id
@@ -119,7 +118,6 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                         <th class="text-center">Price</th>
                         <th class="text-center">Cost</th>
                         <th class="text-center">Size</th>
-                        <th class="text-center">Size Price</th>
                         <th class="text-center">Created</th>
                         <th class="text-center">Updated</th>
                         <th class="text-center">Actions</th>
@@ -132,10 +130,9 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                             <td class="text-center"><?= htmlspecialchars($product['category_name']) ?></td>
                             <td class="text-center"><?= htmlspecialchars($product['subcategory_name']) ?></td>
                             <td class="text-center"><?= htmlspecialchars($product['product_desc']) ?></td>
-                            <td class="text-center">₱<?= number_format($product['product_price']) ?></td>
-                            <td class="text-center">₱<?= number_format($product['product_cost']) ?></td>
+                            <td class="text-center">₱<?= number_format($product['product_price'], 2) ?></td>
+                            <td class="text-center">₱<?= number_format($product['product_cost'], 2) ?></td>
                             <td class="text-center"><?= htmlspecialchars($product['product_size']) ?></td>
-                            <td class="text-center">₱<?= number_format($product['product_size_price']) ?></td>
                             <td class="text-center"><?= date("Y-m-d", strtotime($product['created_at'])) ?></td>
                             <td class="text-center"><?= date("Y-m-d", strtotime($product['updated_at'])) ?></td>
                             <td class="text-center">
@@ -175,29 +172,33 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                     </div>
                     <!-- Category Selection with Add Button -->
                     <div class="mb-3">
-                        <label class="form-label">Category</label>
-                        <div class="d-flex">
-                            <select class="form-control" name="category_id" id="category_id" required>
-                                <option value="">Select a category</option>
-                                <?php foreach ($categories as $category) : ?>
-                                    <option value="<?= $category['category_id'] ?>" <?= ($selected_category == $category['category_id']) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($category['category_name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Subcategory</label>
-                        <div class="d-flex">
-                            <select class="form-control" name="subcategory_id" id="subcategory_id" required disabled>
-                                <option value="">Select a subcategory</option>
-                                <?php foreach ($subcategories as $subcategory) : ?>
-                                    <option value="<?= $subcategory['subcategory_id'] ?>" <?= ($selected_subcategory == $subcategory['subcategory_id']) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($subcategory['subcategory_name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                        <div class="row">
+                            <div class="col-md-6">
+                            <label class="form-label">Category</label>
+                                <div class="d-flex">
+                                    <select class="form-control" name="category_id" id="category_id" required>
+                                        <option value="">Select a category</option>
+                                        <?php foreach ($categories as $category) : ?>
+                                            <option value="<?= $category['category_id'] ?>" <?= ($selected_category == $category['category_id']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($category['category_name']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                            <label class="form-label">Subcategory</label>
+                                <div class="d-flex">
+                                    <select class="form-control" name="subcategory_id" id="subcategory_id" required disabled>
+                                        <option value="">Select a subcategory</option>
+                                        <?php foreach ($subcategories as $subcategory) : ?>
+                                            <option value="<?= $subcategory['subcategory_id'] ?>" <?= ($selected_subcategory == $subcategory['subcategory_id']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($subcategory['subcategory_name']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -205,25 +206,33 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                         <textarea type="text" class="form-control" name="product_desc"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Price</label>
-                        <input type="number" class="form-control" name="product_price" required onkeydown="return blockInvalidInput(event)">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Price</label>
+                                <input type="number" step="0.01" class="form-control" name="product_price" id="product_price" required onkeydown="return blockInvalidInput(event)">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Cost</label>
+                                <input type="number" step="0.01" class="form-control" name="product_cost" id="product_cost" required onkeydown="return blockInvalidInput(event)">
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Cost</label>
-                        <input type="number" class="form-control" name="product_cost" required onkeydown="return blockInvalidInput(event)">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Size</label>
-                        <select class="form-control" name="product_size" required>
-                            <option value="">Select a size</option>
-                            <?php foreach ($enumValues as $value) : ?>
-                                <option value="<?= htmlspecialchars($value) ?>"><?= htmlspecialchars($value) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Size Price</label>
-                        <input type="number" class="form-control" name="product_size_price" required onkeydown="return blockInvalidInput(event)">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Size</label>
+                                <select class="form-control" name="product_size" required>
+                                    <option value="">Select a size</option>
+                                    <?php foreach ($enumValues as $value) : ?>
+                                        <option value="<?= htmlspecialchars($value) ?>"><?= htmlspecialchars($value) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                            <label class="form-label">Pricing Markup % Helper</label>
+                                <input type="number" step="0.01" class="form-control" name="mark_up" onkeydown="return blockInvalidInput(event)">
+                            </div>
+                        </div>
                     </div>
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn btn-primary mx-3">Save</button>
@@ -322,5 +331,6 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                 }
             }
         });
+
     });
 </script>
