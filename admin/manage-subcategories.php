@@ -95,7 +95,7 @@ $selected_category = $_POST['category_id'] ?? null;
                                             data-bs-subcategory-id="<?= $subcategory['subcategory_id'] ?>"
                                             data-bs-subcategory-name="<?= htmlspecialchars($subcategory['subcategory_name']) ?>"
                                             data-bs-category-id="<?= htmlspecialchars($subcategory['category_id']) ?>">
-                                            <img src="../assets/image/edit.svg" alt="Edit" class="" style="max-width: 2em;">
+                                            <img src="../assets/image/edit.svg" alt="Edit" class="img-responsive" style="max-width: 2em;">
                                         </button>
                                         <button type="button" class="btn delete-btn" data-bs-toggle="modal" data-bs-target="#deleteSubcategoryModal"
                                             data-bs-subcategory-id="<?= $subcategory['subcategory_id'] ?>"

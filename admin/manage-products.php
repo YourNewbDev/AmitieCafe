@@ -50,9 +50,8 @@ try {
         // Extract ENUM values
         preg_match("/^enum\((.*)\)$/", $product_sizes['Type'], $matches);
         // Parse ENUM values
-        $enumValues = str_getcsv($matches[1], ",", "'");  
+        $enumValues = str_getcsv($matches[1], ",", "'");
     }
-
 } catch (PDOException $err) {
     die("Query failed: " . $err->getMessage());
 }
@@ -137,12 +136,20 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                             <td class="text-center"><?= date("Y-m-d", strtotime($product['updated_at'])) ?></td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-around">
-                                    <button class="btn" data-bs-toggle="modal" data-bs-target="#editProductModal">
-                                        <img src="../assets/image/edit.svg" alt="Edit" class="" style="max-width: 2em;">
+                                    <button class="btn edit-btn" data-bs-toggle="modal" data-bs-target="#editProductModal"
+                                        data-bs-product-id="<?= $product['product_id'] ?>"
+                                        data-bs-product-name="<?= $product['product_name'] ?>"
+                                        data-bs-category-id="<?= $product['category_id'] ?>"
+                                        data-bs-subcategory-id="<?= $product['subcategory_id'] ?>"
+                                        data-bs-product-desc="<?= $product['product_desc'] ?>"
+                                        data-bs-product-price="<?= $product['product_price'] ?>"
+                                        data-bs-product-cost="<?= $product['product_cost'] ?>"
+                                        data-bs-product-size-id="<?= $product['product_size'] ?>">
+                                        <img src="../assets/image/edit.svg" alt="Edit" class="img-responsive" style="max-width: 2em;">
                                     </button>
                                     <button type="button" class="btn delete-btn" data-bs-toggle="modal" data-bs-target="#deleteProductModal"
-                                    data-bs-product-id="<?= $product['product_id'] ?>"
-                                    data-bs-product-name="<?= htmlspecialchars($product['product_name']) ?>">
+                                        data-bs-product-id="<?= $product['product_id'] ?>"
+                                        data-bs-product-name="<?= htmlspecialchars($product['product_name']) ?>">
                                         <img src="../assets/image/delete.svg" alt="Delete" class="img-responsive" style="max-width: 2em;">
                                     </button>
                                 </div>
@@ -174,7 +181,7 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                     <div class="mb-3">
                         <div class="row">
                             <div class="col-md-6">
-                            <label class="form-label">Category</label>
+                                <label class="form-label">Category</label>
                                 <div class="d-flex">
                                     <select class="form-control" name="category_id" id="category_id" required>
                                         <option value="">Select a category</option>
@@ -187,7 +194,7 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                                 </div>
                             </div>
                             <div class="col-md-6">
-                            <label class="form-label">Subcategory</label>
+                                <label class="form-label">Subcategory</label>
                                 <div class="d-flex">
                                     <select class="form-control" name="subcategory_id" id="subcategory_id" required disabled>
                                         <option value="">Select a subcategory</option>
@@ -221,6 +228,8 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="form-label">Size</label>
+                                <span class="badge text-bg-primary" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-title="Choose regular size for meals as default.">i</span>
                                 <select class="form-control" name="product_size" required>
                                     <option value="">Select a size</option>
                                     <?php foreach ($enumValues as $value) : ?>
@@ -228,9 +237,92 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                                     <?php endforeach; ?>
                                 </select>
                             </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary mx-3">Save</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editProductModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+            <form method="POST" action="/AmitieCafe/admin/products/edit-product.php">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="product_name" id="editProductName" required>
+                        <input type="hidden" class="form-control" name="product_id" id="editProductId">
+                    </div>
+                    <!-- Category Selection with Edit Button -->
+                    <div class="mb-3">
+                        <div class="row">
                             <div class="col-md-6">
-                            <label class="form-label">Pricing Markup % Helper</label>
-                                <input type="number" step="0.01" class="form-control" name="mark_up" onkeydown="return blockInvalidInput(event)">
+                                <label class="form-label">Category</label>
+                                <div class="d-flex">
+                                    <select class="form-control" name="category_id" id="editCategoryId" required>
+                                        <option value="">Select a category</option>
+                                        <?php foreach ($categories as $category) : ?>
+                                            <option value="<?= $category['category_id'] ?>">
+                                                <?= htmlspecialchars($category['category_name']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Subcategory</label>
+                                <div class="d-flex">
+                                    <select class="form-control" name="subcategory_id" id="editSubcategoryId" required disabled>
+                                        <option value="">Select a subcategory</option>
+                                        <?php foreach ($subcategories as $subcategory) : ?>
+                                            <option value="<?= $subcategory['subcategory_id'] ?>">
+                                                <?= htmlspecialchars($subcategory['subcategory_name']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea type="text" class="form-control" name="product_desc" id="editProductDesc"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Price</label>
+                                <input type="number" step="0.01" class="form-control" name="product_price" id="editProductPrice" required onkeydown="return blockInvalidInput(event)">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Cost</label>
+                                <input type="number" step="0.01" class="form-control" name="product_cost" id="editProductCost" required onkeydown="return blockInvalidInput(event)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Size</label>
+                                <span class="badge text-bg-primary" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-title="Choose regular size for meals as default.">i</span>
+                                <select class="form-control" name="product_size" id="editProductSizeId" required>
+                                    <option value="">Select a size</option>
+                                    <?php foreach ($enumValues as $value) : ?>
+                                        <option value="<?= htmlspecialchars($value) ?>"><?= htmlspecialchars($value) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -258,7 +350,7 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                     <div class="mb-3">
                         <input type="hidden" class="form-control" name="product_id" id="deleteProductId">
                     </div>
-                    
+
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn btn-danger mx-3">Delete</button>
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
@@ -283,38 +375,39 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
             errorModal.show();
         <?php endif; ?>
 
-        document.body.addEventListener("click", function(event) {
-            if (event.target.closest(".delete-btn")) {
-                let button = event.target.closest(".delete-btn");
-                let productId = button.getAttribute("data-bs-product-id");
-                let productName = button.getAttribute("data-bs-product-name");
-
-                document.getElementById("deleteProductId").value = productId;
-                document.getElementById("deleteProductName").textContent = productName;
-            }
-        });
-
         // Convert the PHP array into JSON format which JS understands
         const allSubcategories = <?php echo json_encode($subcategories); ?>
 
         // Reference for the select id's
         const categorySelect = document.getElementById("category_id");
         const subcategorySelect = document.getElementById("subcategory_id");
+        const editCategorySelect = document.getElementById("editCategoryId");
+        const editSubcategorySelect = document.getElementById("editSubcategoryId");
 
-        // When a category is selected or changed the function inside the event listener is executed
-        categorySelect.addEventListener("change", function() {
+        // If user changes category it calls loadSubcategories function to update the corresponding subcategories
+        categorySelect.addEventListener("change", function(){
+            loadSubcategories(categorySelect, subcategorySelect);
+        });
+
+        // If user changes category it calls loadSubcategories function to update the corresponding subcategories
+        editCategorySelect.addEventListener("change", function(){
+            loadSubcategories(editCategorySelect, editSubcategorySelect);
+        });
+
+        // Function to load subcategories based on selected category
+        function loadSubcategories(categorySelect, subcategorySelect) {
             // Stores the selected category 
-            const selectedCategoryId = this.value;
+            const selectedCategoryId = categorySelect.value;
 
             // Clears the options back to default value in subcategory when a category selected changes
             subcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
             subcategorySelect.disabled = true;
 
-            // Checks if a selected category is not empty and executes insides the statement
+            // Checks if a selected category is not empty and executes insides the statement and filters the matching subcategoryies
             if (selectedCategoryId) {
                 // Filters the subcategory array based on selected category_id
                 const filteredSubcategories = allSubcategories.filter(sub => sub.category_id === selectedCategoryId);
-                
+
                 // Begins a loop over the filtered subcategories array and iterates through each subcategory in the array
                 // and sub refers to the current subcategory being processed in the loop
                 filteredSubcategories.forEach(sub => {
@@ -329,6 +422,54 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                 if (filteredSubcategories.length > 0) {
                     subcategorySelect.disabled = false;
                 }
+            }
+        }
+
+        // Triggers edit modal to auto load subcategories in selected category
+        const openEditModal = () => {
+            const categoryId = document.getElementById("editCategoryId").value;
+
+            if(categoryId) {
+                loadSubcategories(editCategorySelect, editSubcategorySelect);
+            }
+        }
+
+        // calls openEditModal function when its opened
+        const editModal = document.getElementById("editProductModal");
+        if (editModal) {
+            editModal.addEventListener('show.bs.modal', openEditModal);
+        }
+
+        document.body.addEventListener("click", function(event) {
+            if (event.target.closest(".delete-btn")) {
+                let button = event.target.closest(".delete-btn");
+                let productId = button.getAttribute("data-bs-product-id");
+                let productName = button.getAttribute("data-bs-product-name");
+
+                document.getElementById("deleteProductId").value = productId;
+                document.getElementById("deleteProductName").textContent = productName;
+            }
+
+            if (event.target.closest(".edit-btn")) {
+                let button = event.target.closest(".edit-btn");
+                let productId = button.getAttribute("data-bs-product-id");
+                let productName = button.getAttribute("data-bs-product-name");
+                let categoryId = button.getAttribute("data-bs-category-id");
+                let subcategoryId = button.getAttribute("data-bs-subcategory-id");
+                let productDesc = button.getAttribute("data-bs-product-desc");
+                let productPrice = button.getAttribute("data-bs-product-price");
+                let productCost = button.getAttribute("data-bs-product-cost");
+                let productSizeId = button.getAttribute("data-bs-product-size-id");
+
+                document.getElementById("editProductId").value = productId;
+                document.getElementById("editProductName").value = productName;
+                document.getElementById("editCategoryId").value = categoryId;
+                document.getElementById("editSubcategoryId").value = subcategoryId;
+                document.getElementById("editProductDesc").value = productDesc;
+                document.getElementById("editProductPrice").value = productPrice;
+                document.getElementById("editProductCost").value = productCost;
+                document.getElementById("editProductSizeId").value = productSizeId;
+                
             }
         });
 
