@@ -4,26 +4,66 @@
 $stmt = $pdo->prepare("SELECT * FROM tblcategory");
 $stmt->execute();
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// $stmt = $pdo->prepare("SELECT * FROM tblproduct
+//                     LEFT JOIN tblsubcategory ON tblproduct.subcategory_id = tblsubcategory.subcategory_id
+//                     LEFT JOIN tblcategory ON tblproduct.category_id = tblcategory.category_id
+//                     LEFT JOIN tblproductsize ON tblproduct.product_id = tblproductsize.product_id");
+        
+// $stmt->execute();
+// $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 
 <div class="main-content">
     <div class="row g-0">
         <main class="col-md-7 d-flex flex-column flex-grow-1 overflow-auto vh-100">
             <div class="scrollable-menu pt-2 me-5">
-                <?php foreach($categories as $category) : ?>
-                    <button class="btn custom-btn btn-lg rounded-top m-2"><?= htmlspecialchars($category['category_name']); ?></button>
-                <?php endforeach; ?>
+                <form action="/AmitieCafe/pos.php" method="GET">
+                    <?php foreach($categories as $category) : ?>
+                        <button class="btn custom-btn btn-lg rounded-top m-2" name="category_id" value="<?= $category['category_id'] ?>" type="submit"><?= htmlspecialchars($category['category_name']); ?></button>
+                    <?php endforeach; ?>
+                </form>
             </div>
-            <?php foreach($categories as $category) : ?>
+            <?php if ($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET['category_id'])) {
+                $category_id = (int) $_GET['category_id'];
+            ?>
                 <?php
                     $stmt = $pdo->prepare("SELECT * FROM tblsubcategory WHERE category_id = ?");
-                    $stmt->execute([$category['category_id']]);
+                    $stmt->execute([$category_id]);
                     $subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 ?>
-                <?php foreach($subcategories as $subcategory) : ?>
-                <button class="btn custom-btn rounded-top m-2 w-25"><?= htmlspecialchars($subcategory['subcategory_name']); ?></button>
-                <?php endforeach; ?>
-            <?php endforeach; ?>
+                
+                <form action="/AmitieCafe/pos.php" method="GET">
+                    <?php foreach($subcategories as $subcategory) : ?>
+                        <input type="hidden" name="category_id" value="<?= $category_id; ?>">
+                        <button class="btn custom-btn rounded-top m-2 w-25" name="subcategory_id" value="<?= $subcategory['subcategory_id']; ?>"><?= htmlspecialchars($subcategory['subcategory_name']); ?></button>
+                    <?php endforeach; ?>
+                </form>
+
+                <?php if ($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET['subcategory_id'])) { 
+                    $subcategory_id = (int) $_GET['subcategory_id'];
+                ?>
+                    <?php
+                        $stmt = $pdo->prepare("SELECT * FROM tblproduct WHERE subcategory_id = ?");
+                        $stmt->execute([$subcategory_id]);
+                        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                    ?>
+
+                    <?php foreach($products as $product) : ?>
+                        <button class="btn custom-btn rounded-top m-2 w-25" name="subcategory_id" value="<?= $product['product_id']; ?>"><?= htmlspecialchars($product['product_name']); ?></button>
+                    <?php endforeach; ?>
+
+
+                <?php } ?>
+                
+            <?php } ?>
+            <div class="row">
+                <div class="col">
+                    asdsa
+                </div>
+            </div>
         </main>
 
         <aside class="col-md-5 d-flex flex-column border-start vh-100 px-3">
