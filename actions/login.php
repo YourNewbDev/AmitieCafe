@@ -4,6 +4,13 @@ session_start();
 
 include "../config/database.php";
 
+if (isset($_SESSION['user_name'])) {
+    header("Location: ../pos.php");
+
+    exit;
+    
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];

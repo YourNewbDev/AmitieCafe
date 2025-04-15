@@ -68,3 +68,47 @@
     z-index: 100; /* Ensure it stays above other content */
     overflow-y: auto; /* Enable scrolling if content overflows */
 }
+
+.scrollable-menu {
+    display: flex; /* Use flexbox to arrange items in a row */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent items from wrapping to the next line */
+    padding: 10px; /* Optional: Add some padding */
+    flex-shrink: 0;
+}
+
+.scrollable-menu .btn {
+    margin-right: 10px; /* Space between buttons */
+}
+
+.custom-btn {
+    background-color: #4A6A8C;
+    color: white;
+}
+.custom-btn:hover {
+    background-color: #4A6A8C;
+    color: white;
+}
+
+@media (min-width: 992px) {
+    .main-content {
+      margin-left: 230px; /* same as sidebar width */
+    }
+  }
+
+/* For Chrome, Safari, and Edge */
+::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+     /* Background of the scrollbar track */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  /* Color of the scrollbar handle */
+    border-radius: 10px; /* Rounded edges for the handle */
+}
+

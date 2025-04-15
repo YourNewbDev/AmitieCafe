@@ -65,7 +65,7 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
 ?>
 
 <!-- Main Content (Scrollable) -->
-<main class="col-md-12 d-flex flex-column flex-grow-1 overflow-auto pt-3 px-3">
+<main class="main-content d-flex flex-column flex-grow-1 overflow-auto pt-3 px-3">
     <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

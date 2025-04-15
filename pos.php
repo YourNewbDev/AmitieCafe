@@ -1,29 +1,32 @@
 <?php include "includes/header.php"; ?>
 
-<div class="container-fluid">
-    <div class="row">
-        <main class="col-md-8 d-flex flex-column flex-grow-1 overflow-auto vh-100">
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
-        <h1>asdsa</h1>
+<?php
+$stmt = $pdo->prepare("SELECT * FROM tblcategory");
+$stmt->execute();
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+
+<div class="main-content">
+    <div class="row g-0">
+        <main class="col-md-7 d-flex flex-column flex-grow-1 overflow-auto vh-100">
+            <div class="scrollable-menu pt-2 me-5">
+                <?php foreach($categories as $category) : ?>
+                    <button class="btn custom-btn btn-lg rounded-top m-2"><?= htmlspecialchars($category['category_name']); ?></button>
+                <?php endforeach; ?>
+            </div>
+            <?php foreach($categories as $category) : ?>
+                <?php
+                    $stmt = $pdo->prepare("SELECT * FROM tblsubcategory WHERE category_id = ?");
+                    $stmt->execute([$category['category_id']]);
+                    $subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                ?>
+                <?php foreach($subcategories as $subcategory) : ?>
+                <button class="btn custom-btn rounded-top m-2 w-25"><?= htmlspecialchars($subcategory['subcategory_name']); ?></button>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
         </main>
 
-        <aside class="col-md-4 d-flex flex-column border-start vh-100">
+        <aside class="col-md-5 d-flex flex-column border-start vh-100 px-3">
             <h4 class="fw-bold text-center">CURRENT SALE</h4>
 
             <ul class="list-group overflow-auto flex-grow-1 mb-3">
@@ -31,95 +34,7 @@
                     <div class="text-truncate w-75">Product Name</div>
                     <span class="badge bg-primary rounded-pill">₱80.00</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="text-truncate w-75">Product Name</div>
-                    <span class="badge bg-primary rounded-pill">₱80.00</span>
-                </li>
-                <!-- Repeat items as needed -->
+                <!-- Repeat list items as needed -->
             </ul>
 
             <div class="d-flex justify-content-between mb-2">

@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['category_id'])) {
         $_SESSION['success_message'] = "Category successfully updated.";
     } catch (PDOException $err) {
         
-        $_SESSION['error_message'] = "Error deleting category" . $err->getMessage();
+        $_SESSION['error_message'] = "Error editing category" . $err->getMessage();
     }
 
     header("Location: ../manage-categories.php");
