@@ -21,12 +21,12 @@ try {
                 sc.subcategory_id,
                 sc.subcategory_name,
                 p.product_desc,
-                p.product_price,
-                p.product_cost,
                 p.created_at,
                 p.updated_at,
                 ps.product_size_id,
-                ps.product_size
+                ps.product_size,
+                ps.product_size_price,
+                ps.product_size_cost
             FROM tblproduct p
             LEFT JOIN tblcategory c ON p.category_id = c.category_id
             LEFT JOIN tblsubcategory sc ON p.subcategory_id = sc.subcategory_id
@@ -129,8 +129,8 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                             <td class="text-center"><?= htmlspecialchars($product['category_name']) ?></td>
                             <td class="text-center"><?= htmlspecialchars($product['subcategory_name']) ?></td>
                             <td class="text-center"><?= htmlspecialchars($product['product_desc']) ?></td>
-                            <td class="text-center">₱<?= number_format($product['product_price'], 2) ?></td>
-                            <td class="text-center">₱<?= number_format($product['product_cost'], 2) ?></td>
+                            <td class="text-center">₱<?= number_format($product['product_size_price'], 2) ?></td>
+                            <td class="text-center">₱<?= number_format($product['product_size_cost'], 2) ?></td>
                             <td class="text-center"><?= htmlspecialchars($product['product_size']) ?></td>
                             <td class="text-center"><?= date("Y-m-d", strtotime($product['created_at'])) ?></td>
                             <td class="text-center"><?= date("Y-m-d", strtotime($product['updated_at'])) ?></td>
@@ -142,8 +142,8 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                                         data-bs-category-id="<?= $product['category_id'] ?>"
                                         data-bs-subcategory-id="<?= $product['subcategory_id'] ?>"
                                         data-bs-product-desc="<?= $product['product_desc'] ?>"
-                                        data-bs-product-price="<?= $product['product_price'] ?>"
-                                        data-bs-product-cost="<?= $product['product_cost'] ?>"
+                                        data-bs-product-price="<?= $product['product_size_price'] ?>"
+                                        data-bs-product-cost="<?= $product['product_size_cost'] ?>"
                                         data-bs-product-size-id="<?= $product['product_size'] ?>">
                                         <img src="../assets/image/edit.svg" alt="Edit" class="img-responsive" style="max-width: 2em;">
                                     </button>
@@ -216,11 +216,11 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="form-label">Price</label>
-                                <input type="number" step="0.01" class="form-control" name="product_price" id="product_price" required onkeydown="return blockInvalidInput(event)">
+                                <input type="number" step="0.01" class="form-control" name="product_size_price" id="product_size_price" required onkeydown="return blockInvalidInput(event)">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Cost</label>
-                                <input type="number" step="0.01" class="form-control" name="product_cost" id="product_cost" required onkeydown="return blockInvalidInput(event)">
+                                <input type="number" step="0.01" class="form-control" name="product_size_cost" id="product_size_cost" required onkeydown="return blockInvalidInput(event)">
                             </div>
                         </div>
                     </div>

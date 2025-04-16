@@ -90,6 +90,16 @@
     color: white;
 }
 
+.custom-btn-prod {
+    background-color: #5c7897;
+    color: white;
+}
+
+.custom-btn-prod:hover {
+    background-color: #5c7897;
+    color: white;
+}
+
 @media (min-width: 992px) {
     .main-content {
       margin-left: 230px; /* same as sidebar width */
