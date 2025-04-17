@@ -86,27 +86,32 @@ foreach ($categories as $category) {
                                                 </div>
 
                                                 <div class="modal-body">
-                                                    <p><strong>Description:</strong> <?= htmlspecialchars($product['product_desc']); ?></p>
-                                                    <div class="list-group">
-                                                        <!-- Loop through each size and display its price, cost, and an input field for quantity -->
-                                                        <?php foreach ($sizes as $size): ?>
-                                                            <div class="list-group-item list-group-item-action p-3 mb-2 bg-light rounded">
-                                                                <div class="d-flex justify-content-between align-items-center">
-                                                                    <h6 class="mb-1"><strong>Size:</strong> <?= htmlspecialchars($size['product_size']); ?></h6>
-                                                                </div>
-                                                                <p class="mb-1"><strong>Price:</strong> ₱<?= number_format($size['product_size_price'], 2); ?></p>
-                                                                <p class="mb-1"><strong>Cost:</strong> ₱<?= number_format($size['product_size_cost'], 2); ?></p>
+                                                    <?php foreach ($sizes as $size): ?>
+                                                        <form action="/AmitieCafe/cart.php" method="post">
+                                                            <p><strong>Description:</strong> <?= htmlspecialchars($product['product_desc']); ?></p>
+                                                            <div class="list-group">
+                                                                <!-- Loop through each size and display its price, cost, and an input field for quantity -->
 
-                                                                <!-- Input field for quantity and the "Add" button -->
-                                                                <div class="d-flex align-items-center">
-                                                                    <input type="number" id="quantity<?= $size['product_size_id']; ?>" class="form-control me-2" min="1" value="1" style="width: 70px;">
-                                                                    <button class="btn btn-success" onclick="addQuantity(<?= $size['product_size_id']; ?>, <?= $product['product_id']; ?>, '<?= htmlspecialchars($product['product_name']); ?>', '<?= htmlspecialchars($size['product_size']); ?>', <?= $size['product_size_price']; ?>)">
-                                                                        Add
-                                                                    </button>
+                                                                <div class="list-group-item list-group-item-action p-3 mb-2 bg-light rounded">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <h6 class="mb-1"><strong>Size:</strong> <?= htmlspecialchars($size['product_size']); ?></h6>
+                                                                    </div>
+                                                                    <p class="mb-1"><strong>Price:</strong> ₱<?= number_format($size['product_size_price'], 2); ?></p>
+                                                                    <p class="mb-1"><strong>Cost:</strong> ₱<?= number_format($size['product_size_cost'], 2); ?></p>
+
+                                                                    <!-- Input field for quantity and the "Add" button -->
+                                                                    <div class="d-flex align-items-center">
+                                                                        <input type="number" name="quantity" class="form-control me-2" min="1" value="1" style="width: 70px;">
+                                                                        <!-- Add hidden fields to send product size id and price -->
+                                                                        <input type="hidden" name="product_size_id" value="<?= $size['product_size_id']; ?>">
+                                                                        <input type="hidden" name="product_size_price" value="<?= $size['product_size_price']; ?>">
+                                                                        <button class="btn btn-success" type="submit" name="add_to_cart">Add</button>
+                                                                    </div>
                                                                 </div>
+
                                                             </div>
-                                                        <?php endforeach; ?>
-                                                    </div>
+                                                        </form>
+                                                    <?php endforeach; ?>
                                                 </div>
 
                                                 <div class="modal-footer">
@@ -237,76 +242,23 @@ foreach ($categories as $category) {
 </div>
 
 <script>
-    let cart = []; // Initialize an empty cart
+    let calcDisplay = document.getElementById('calc-display');
+    let currentInput = '';
 
-    // Function to handle adding products to the cart
-    function addQuantity(sizeId, productId, productName, productSize, productPrice) {
-        let quantity = document.getElementById('quantity' + sizeId).value;
-
-        if (quantity <= 0 || isNaN(quantity)) {
-            alert('Please enter a valid quantity!');
-            return;
-        }
-
-        // Check if the product already exists in the cart
-        let existingItem = cart.find(item => item.productId === productId && item.sizeId === sizeId);
-        if (existingItem) {
-            existingItem.quantity += parseInt(quantity); // Update quantity if product is already in the cart
-            existingItem.totalPrice = existingItem.price * existingItem.quantity;
+    function handleCalc(value) {
+        if (value === 'C') {
+            currentInput = '';
+        } else if (value === '=') {
+            try {
+                currentInput = eval(currentInput).toString();
+            } catch (e) {
+                currentInput = 'Error';
+            }
         } else {
-            // Add new item to cart
-            cart.push({
-                productId: productId,
-                sizeId: sizeId,
-                productName: productName,
-                productSize: productSize,
-                price: productPrice,
-                quantity: parseInt(quantity),
-                totalPrice: productPrice * quantity
-            });
+            currentInput += value;
         }
 
-        // Update the cart in the sidebar
-        updateCartSidebar();
-    }
-
-    // Function to update the sidebar dynamically with cart items
-    function updateCartSidebar() {
-        let cartItemsList = document.getElementById('cartItemsList');
-        let totalPriceElement = document.getElementById('totalPrice');
-
-        // Clear existing items in the sidebar
-        cartItemsList.innerHTML = '';
-
-        let totalPrice = 0;
-
-        // Loop through cart items and add them to the sidebar
-        cart.forEach(item => {
-            let listItem = document.createElement('li');
-            listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
-            listItem.innerHTML = `
-            <div class="row w-100">
-            <div class="col-6 col-sm-6 col-md-5">
-                <div class="text-truncate">${item.productName} (${item.productSize})</div>
-            </div>
-            <div class="col-3 col-sm-2 col-md-2 d-flex justify-content-center align-items-center">
-                ₱${item.price.toFixed(2)}
-            </div>
-            <div class="col-2 col-sm-2 col-md-2 d-flex justify-content-center align-items-center">
-                ${item.quantity}
-            </div>
-            <div class="col-3 col-sm-2 col-md-2 d-flex justify-content-center align-items-center">
-                ₱${item.totalPrice.toFixed(2)}
-            </div>
-        </div>
-            `;
-            cartItemsList.appendChild(listItem);
-
-            totalPrice += item.totalPrice; // Update total price
-        });
-
-        // Update the total price in the sidebar
-        totalPriceElement.innerText = totalPrice.toFixed(2);
+        calcDisplay.value = currentInput;
     }
 </script>
 
