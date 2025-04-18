@@ -143,6 +143,7 @@ foreach ($categories as $category) {
                                         <button class="btn custom-btn-prod m-2 w-25" data-bs-toggle="modal" data-bs-target="#productModal<?= $product['product_id']; ?>">
                                             <?= htmlspecialchars($product['product_name']); ?>
                                         </button>
+                                        <!-- Modal -->
                                         <div class="modal fade" id="productModal<?= $product['product_id']; ?>" tabindex="-1" aria-labelledby="modalLabel<?= $product['product_id']; ?>" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
@@ -160,27 +161,32 @@ foreach ($categories as $category) {
                                                     </div>
 
                                                     <div class="modal-body">
-                                                        <p><strong>Description:</strong> <?= htmlspecialchars($product['product_desc']); ?></p>
-                                                        <div class="list-group">
-                                                            <!-- Loop through each size and display its price, cost, and an input field for quantity -->
-                                                            <?php foreach ($sizes as $size): ?>
-                                                                <div class="list-group-item list-group-item-action p-3 mb-2 bg-light rounded">
-                                                                    <div class="d-flex justify-content-between align-items-center">
-                                                                        <h6 class="mb-1"><strong>Size:</strong> <?= htmlspecialchars($size['product_size']); ?></h6>
-                                                                    </div>
-                                                                    <p class="mb-1"><strong>Price:</strong> ₱<?= number_format($size['product_size_price'], 2); ?></p>
-                                                                    <p class="mb-1"><strong>Cost:</strong> ₱<?= number_format($size['product_size_cost'], 2); ?></p>
+                                                        <?php foreach ($sizes as $size): ?>
+                                                            <form action="/AmitieCafe/actions/cart.php" method="post">
+                                                                <p><strong>Description:</strong> <?= htmlspecialchars($product['product_desc']); ?></p>
+                                                                <div class="list-group">
+                                                                    <!-- Loop through each size and display its price, cost, and an input field for quantity -->
 
-                                                                    <!-- Input field for quantity and the "Add" button -->
-                                                                    <div class="d-flex align-items-center">
-                                                                        <input type="number" id="quantity<?= $size['product_size_id']; ?>" class="form-control me-2" min="1" value="1" style="width: 70px;">
-                                                                        <button class="btn btn-success" onclick="addQuantity(<?= $size['product_size_id']; ?>, <?= $product['product_id']; ?>, '<?= htmlspecialchars($product['product_name']); ?>', '<?= htmlspecialchars($size['product_size']); ?>', <?= $size['product_size_price']; ?>)">
-                                                                            Add
-                                                                        </button>
+                                                                    <div class="list-group-item list-group-item-action p-3 mb-2 bg-light rounded">
+                                                                        <div class="d-flex justify-content-between align-items-center">
+                                                                            <h6 class="mb-1"><strong>Size:</strong> <?= htmlspecialchars($size['product_size']); ?></h6>
+                                                                        </div>
+                                                                        <p class="mb-1"><strong>Price:</strong> ₱<?= number_format($size['product_size_price'], 2); ?></p>
+                                                                        <p class="mb-1"><strong>Cost:</strong> ₱<?= number_format($size['product_size_cost'], 2); ?></p>
+
+                                                                        <!-- Input field for quantity and the "Add" button -->
+                                                                        <div class="d-flex align-items-center">
+                                                                            <input type="number" name="quantity" class="form-control me-2" min="1" value="1" style="width: 70px;">
+                                                                            <!-- Add hidden fields to send product size id and price -->
+                                                                            <input type="hidden" name="product_size_id" value="<?= $size['product_size_id']; ?>">
+                                                                            <input type="hidden" name="product_size_price" value="<?= $size['product_size_price']; ?>">
+                                                                            <button class="btn btn-success" type="submit" name="add_to_cart">Add</button>
+                                                                        </div>
                                                                     </div>
+
                                                                 </div>
-                                                            <?php endforeach; ?>
-                                                        </div>
+                                                            </form>
+                                                        <?php endforeach; ?>
                                                     </div>
 
                                                     <div class="modal-footer">
@@ -207,11 +213,58 @@ foreach ($categories as $category) {
 
             <ul id="cartItemsList" class="list-group overflow-auto flex-grow-1 mb-3">
                 <!-- Cart items will be added here dynamically -->
+                <?php
+                $stmt = $pdo->prepare("SELECT c.cart_id, c.cart_price, c.cart_qty, c.cart_total,
+                                            p.product_name, ps.product_size, c.product_size_id
+                                            FROM tblcart c
+                                            JOIN tblproductsize ps ON c.product_size_id = ps.product_size_id
+                                            JOIN tblproduct p ON ps.product_id = p.product_id
+                                            ORDER BY c.cart_id DESC");
+                $stmt->execute();
+                $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                ?>
+                <?php if (count($cartItems) > 0): ?>
+                    <?php foreach ($cartItems as $item): ?>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <form action="/AmitieCafe/actions/addorsub-quantity.php" method="POST">
+                                    <strong><?= htmlspecialchars($item['product_name']) ?> x <?= htmlspecialchars($item['product_size']) ?></strong><br>
+                                    <strong>
+                                        Price: ₱<?= htmlspecialchars($item['cart_price']) ?><br>
+                                        Qty: <?= $item['cart_qty'] ?>
+
+                                        <!-- Buttons -->
+                                        <button class="btn btn-primary btn-sm" type="submit" name="add">+</button>
+                                        <button class="btn btn-danger btn-sm" type="submit" name="sub">-</button>
+                                    </strong>
+
+                                    <!-- ✅ Hidden fields (must be inside the form) -->
+                                    <input type="hidden" name="product_size_id" value="<?= $item['product_size_id'] ?>">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <input type="hidden" name="product_size_price" value="<?= $item['cart_price'] ?>">
+                                </form>
+                            </div>
+                            <span class="badge bg-success rounded-pill">
+                                ₱<?= number_format($item['cart_total'], 2) ?>
+                            </span>
+                        </li>
+                    <?php endforeach; ?>
+
+                <?php else: ?>
+                    <li class="list-group-item text-center text-muted">Cart is empty.</li>
+                <?php endif; ?>
+
             </ul>
 
             <div class="d-flex justify-content-between mb-2">
+                <?php
+                $stmt = $pdo->prepare("SELECT SUM(cart_total) AS total_cart
+                                            FROM tblcart");
+                $stmt->execute();
+                $totalCart = $stmt->fetch();
+                ?>
                 <h3 class="fw-bold">Total:</h3>
-                <h3 class="fw-bold" id="totalPrice">₱0.00</h3>
+                <h3 class="fw-bold" id="totalPrice">₱<?= $totalCart['total_cart']; ?></h3>
             </div>
 
             <button class="btn btn-success w-100 mb-3">Complete Sale</button>
