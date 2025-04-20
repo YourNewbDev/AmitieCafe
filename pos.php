@@ -238,7 +238,7 @@ foreach ($categories as $category) {
                                         <button class="btn btn-danger btn-sm" type="submit" name="sub">-</button>
                                     </strong>
 
-                                    <!-- ✅ Hidden fields (must be inside the form) -->
+                                    <!-- Hidden fields (must be inside the form) -->
                                     <input type="hidden" name="product_size_id" value="<?= $item['product_size_id'] ?>">
                                     <input type="hidden" name="quantity" value="1">
                                     <input type="hidden" name="product_size_price" value="<?= $item['cart_price'] ?>">
@@ -267,7 +267,96 @@ foreach ($categories as $category) {
                 <h3 class="fw-bold" id="totalPrice">₱<?= $totalCart['total_cart']; ?></h3>
             </div>
 
-            <button class="btn btn-success w-100 mb-3">Complete Sale</button>
+
+            <button class="btn btn-success w-100 mb-3" data-bs-toggle="modal" data-bs-target="#orderModal">Complete Sale</button>
+
+            <?php
+
+            $stmt = $pdo->query("SHOW COLUMNS FROM tblpayment WHERE Field = 'payment_type'");
+            $payment_method = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($payment_method && isset($payment_method['Type'])) {
+                // Extract ENUM values
+                preg_match("/^enum\((.*)\)$/", $payment_method['Type'], $matches);
+                // Parse ENUM values
+                $enumValues = str_getcsv($matches[1], ",", "'");
+            }
+
+            $selected_payment_method = $_POST['payment_method'] ?? '';
+
+            ?>
+
+            <!-- Modal -->
+            <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form action="/AmitieCafe/actions/process-order.php" method="post">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title fs-2">PAYMENT</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <?php
+                                $stmt = $pdo->prepare("SELECT SUM(cart_total) AS total_cart FROM tblcart");
+                                $stmt->execute();
+                                $totalCart = $stmt->fetch();
+
+                                ?>
+                                <label class="form-label fs-3">Total: </label>
+                                <input type="input" class="form-control fs-3" value="₱<?= $totalCart['total_cart']; ?>" disabled>
+                                <br>
+                                <label for="payment_method" class="form-label fs-5">Payment Method:</label>
+                                <select name="payment_method" id="payment_method" class="form-select fs-5" required>
+                                    <option value="">-- Select Payment Method --</option>
+                                    <?php foreach ($enumValues as $value) : ?>
+                                        <option value="<?= htmlspecialchars($value) ?>">
+                                            <?= htmlspecialchars(ucfirst($value)) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <br>
+                                <!-- CASH -->
+                                <div id="payment_cash" class="payment-fields d-none">
+                                    <label class="form-label fs-5">Cash Received:</label>
+                                    <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="Enter amount received">
+                                </div>
+
+                                <!-- GCASH -->
+                                <div id="payment_gcash" class="payment-fields d-none">
+                                    <label class="form-label fs-5">Amount Received:</label>
+                                    <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="Enter amount received">
+                                    <label class="form-label mt-2">Reference Number:</label>
+                                    <input type="text" name="payment_reference" class="form-control fs-5" placeholder="GCash Ref #">
+                                </div>
+
+                                <!-- MAYA -->
+                                <div id="payment_maya" class="payment-fields d-none">
+                                    <label class="form-label">Amount Received:</label>
+                                    <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="Enter amount received">
+                                    <label class="form-label mt-2">Reference Number:</label>
+                                    <input type="text" name="payment_reference" class="form-control fs-5" placeholder="Maya Ref #">
+                                </div>
+
+                                <!-- BANK -->
+                                <div id="payment_bank_transfer" class="payment-fields d-none">
+                                    <label class="form-label fs-5">Amount Received:</label>
+                                    <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="Enter amount received">
+                                    <label class="form-label fs-5">Bank Name:</label>
+                                    <input type="text" name="payment_bank_name" class="form-control fs-5" placeholder="BPI, BDO, etc.">
+                                    <label class="form-label mt-2 fs-5">Reference Number:</label>
+                                    <input type="text" name="payment_reference" class="form-control fs-5" placeholder="Bank Ref #">
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-success">Confirm & Print</button>
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <!-- Calculator (as is) -->
             <div class="mt-auto p-3 border rounded bg-light">
@@ -295,6 +384,19 @@ foreach ($categories as $category) {
 </div>
 
 <script>
+    const paymentMethodSelect = document.getElementById("payment_method");
+    const paymentFields = document.querySelectorAll(".payment-fields");
+
+    paymentMethodSelect.addEventListener("change", function() {
+        const method = this.value.toLowerCase().replace(/\s/g, '_');
+
+        paymentFields.forEach(group => group.classList.add('d-none'));
+
+        const selectedGroup = document.getElementById('payment_' + method);
+        if (selectedGroup) selectedGroup.classList.remove('d-none');
+    });
+
+
     let calcDisplay = document.getElementById('calc-display');
     let currentInput = '';
 
