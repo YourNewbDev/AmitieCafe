@@ -350,7 +350,7 @@ foreach ($categories as $category) {
                             </div>
 
                             <div class="modal-footer">
-                                <button class="btn btn-success">Confirm & Print</button>
+                                <button class="btn btn-success" type="submit">Confirm & Print</button>
                                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                             </div>
                         </div>
