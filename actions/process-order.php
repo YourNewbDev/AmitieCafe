@@ -14,17 +14,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $payment_type = $_POST['payment_method'];
     $payment_amount_paid = $_POST['payment_amount_paid'];
-    $payment_reference = $_POST['payment_reference'];
-    $payment_bank_name = $_POST['payment_bank_name'];
+    $payment_reference = $_POST['payment_reference'] ?? null;
+    $payment_bank_name = $_POST['payment_bank_name'] ?? null;
     $payment_change = (float) $payment_amount_paid - (float) $total_cart['total_cart'];
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO tblpayment (payment_type, payment_bank_name, payment_reference, payment_amount_paid, payment_change)
+        $stmt_payment = $pdo->prepare("INSERT INTO tblpayment (payment_type, payment_bank_name, payment_reference, payment_amount_paid, payment_change)
                             VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$payment_type, $payment_bank_name, $payment_reference, $payment_amount_paid, $payment_change]);
+        $stmt_payment->execute([$payment_type, $payment_bank_name, $payment_reference, $payment_amount_paid, $payment_change]);
 
         $payment_id = $pdo->lastInsertId();
-        //code...
+
+
+        $stmt_order = $pdo->prepare("INSERT INTO tblorder (created_at, user_id, payment_id)
+                            VALUES (NOW(), ?, ?)");
+
+        $stmt_order->execute([$user_id, $payment_id]);
+
+        $order_id = $pdo->lastInsertId();
+
+        $stmt_productorder = $pdo->prepare("INSERT INTO tblproductorder (productorder_total,
+                                                                        productorder_qty,
+                                                                        productorder_price,
+                                                                        productorder_status,
+                                                                        product_size_id,
+                                                                        order_id)
+                                            SELECT cart_total,
+                                                    cart_qty,
+                                                    cart_price,
+                                                    'ORDERED',
+                                                    product_size_id,
+                                                    :order_id
+                                            FROM tblcart");
+
+        $stmt_productorder->execute([':order_id' => $order_id]);
+
+        $productorder_id = $pdo->lastInsertId();
+
+        $stmt_cart = $pdo->prepare("DELETE FROM tblcart");
+        $stmt_cart->execute();
     } catch (\Throwable $th) {
         //throw $th;
     }

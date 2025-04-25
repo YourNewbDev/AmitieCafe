@@ -307,7 +307,7 @@ foreach ($categories as $category) {
                                 <br>
                                 <label for="payment_method" class="form-label fs-5">Payment Method:</label>
                                 <select name="payment_method" id="payment_method" class="form-select fs-5" required>
-                                    <option value="">-- Select Payment Method --</option>
+                                    <option value="">Select Payment Method</option>
                                     <?php foreach ($enumValues as $value) : ?>
                                         <option value="<?= htmlspecialchars($value) ?>">
                                             <?= htmlspecialchars(ucfirst($value)) ?>
@@ -316,35 +316,15 @@ foreach ($categories as $category) {
                                 </select>
                                 <br>
                                 <!-- CASH -->
-                                <div id="payment_cash" class="payment-fields d-none">
-                                    <label class="form-label fs-5">Cash Received:</label>
-                                    <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="Enter amount received">
-                                </div>
-
-                                <!-- GCASH -->
-                                <div id="payment_gcash" class="payment-fields d-none">
+                                <div id="payment">
                                     <label class="form-label fs-5">Amount Received:</label>
-                                    <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="Enter amount received">
-                                    <label class="form-label mt-2">Reference Number:</label>
-                                    <input type="text" name="payment_reference" class="form-control fs-5" placeholder="GCash Ref #">
-                                </div>
+                                    <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="0.00" required>
 
-                                <!-- MAYA -->
-                                <div id="payment_maya" class="payment-fields d-none">
-                                    <label class="form-label">Amount Received:</label>
-                                    <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="Enter amount received">
-                                    <label class="form-label mt-2">Reference Number:</label>
-                                    <input type="text" name="payment_reference" class="form-control fs-5" placeholder="Maya Ref #">
-                                </div>
-
-                                <!-- BANK -->
-                                <div id="payment_bank_transfer" class="payment-fields d-none">
-                                    <label class="form-label fs-5">Amount Received:</label>
-                                    <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="Enter amount received">
                                     <label class="form-label fs-5">Bank Name:</label>
-                                    <input type="text" name="payment_bank_name" class="form-control fs-5" placeholder="BPI, BDO, etc.">
-                                    <label class="form-label mt-2 fs-5">Reference Number:</label>
-                                    <input type="text" name="payment_reference" class="form-control fs-5" placeholder="Bank Ref #">
+                                    <input type="number" name="payment_bank_name" class="form-control mb-2 fs-5" placeholder="BPI/BDO/UNION BANK">
+
+                                    <label class="form-label fs-5">Ref No:</label>
+                                    <input type="number" name="payment_reference" class="form-control mb-2 fs-5" placeholder="123456789">
                                 </div>
 
                             </div>
@@ -384,19 +364,6 @@ foreach ($categories as $category) {
 </div>
 
 <script>
-    const paymentMethodSelect = document.getElementById("payment_method");
-    const paymentFields = document.querySelectorAll(".payment-fields");
-
-    paymentMethodSelect.addEventListener("change", function() {
-        const method = this.value.toLowerCase().replace(/\s/g, '_');
-
-        paymentFields.forEach(group => group.classList.add('d-none'));
-
-        const selectedGroup = document.getElementById('payment_' + method);
-        if (selectedGroup) selectedGroup.classList.remove('d-none');
-    });
-
-
     let calcDisplay = document.getElementById('calc-display');
     let currentInput = '';
 
