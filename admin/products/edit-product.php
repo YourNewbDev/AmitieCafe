@@ -15,41 +15,41 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['product_id'])) {
     $product_size = trim($_POST['product_size']) ?? null;
 
     try {
-        // Check if the size already exists for the product
-        $stmt = $pdo->prepare("SELECT * FROM tblproductsize WHERE product_id = ? AND product_size = ?");
-        $stmt->execute([$product_id, $product_size]);
-        $existingSize = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Update tblproduct
+        $stmtProduct = $pdo->prepare("UPDATE tblproduct
+                               SET product_name = ?, subcategory_id = ?,
+                               category_id = ?, product_desc = ?,
+                               updated_at = NOW()
+                               WHERE product_id = ?");
+        $stmtProduct->execute([$product_name, $subcategory_id, $category_id, $product_desc, $product_id]);
 
-        if ($existingSize) {
-            // Size already exists, set an error message
-            $_SESSION['error_message'] = "This size already exists for the selected product.";
-        } else {
-            // Update the tblproduct table with new product details (name, category, description, price, and cost)
-            $sql1 = "UPDATE tblproduct SET product_name = ?, category_id = ?, product_desc = ?, updated_at = NOW() WHERE product_id = ?";
-            $stmt = $pdo->prepare($sql1);
-            $stmt->execute([$product_name, $category_id, $product_desc, $product_id]);
+        // Fetch existing size data
+        $stmtOld = $pdo->prepare("SELECT product_size_price, product_size_cost, product_size FROM tblproductsize WHERE product_id = ?");
+        $stmtOld->execute([$product_id]);
+        $oldProductSize = $stmtOld->fetch(PDO::FETCH_ASSOC);
 
-            // If subcategory is set, update it as well
-            if ($subcategory_id) {
-                $sql2 = "UPDATE tblproduct SET subcategory_id = ? WHERE product_id = ?";
-                $stmt = $pdo->prepare($sql2);
-                $stmt->execute([$subcategory_id, $product_id]);
-            }
-
-            // Update the tblproductsize table with new size, price, and cost for the product size
-            $sql3 = "UPDATE tblproductsize SET product_size = ?, product_size_price = ?, product_size_cost = ? WHERE product_id = ? AND product_size";
-            $stmt = $pdo->prepare($sql3);
-            $stmt->execute([$product_size, $product_size_price, $product_size_cost, $product_id]);
-
-            $_SESSION['success_message'] = "Product successfully updated.";
+        if (!$oldProductSize) {
+            $_SESSION['error_message'] = "Product size not found.";
+            header("Location: ../manage-products.php");
+            exit;
         }
 
-    } catch (PDOException $err) {
-        $_SESSION['error_message'] = "Error editing product: " . $err->getMessage();
+        // If form fields are empty, keep old values
+        $product_size_price = $product_size_price !== '' ? $product_size_price : $oldProductSize['product_size_price'];
+        $product_size_cost = $product_size_cost !== '' ? $product_size_cost : $oldProductSize['product_size_cost'];
+        $product_size = $product_size !== '' ? $product_size : $oldProductSize['product_size'];
+
+        // Update tblproductsize
+        $stmtProductSize = $pdo->prepare("UPDATE tblproductsize
+                                          SET product_size = ?, product_size_price = ?, product_size_cost = ?
+                                          WHERE product_id = ?");
+        $stmtProductSize->execute([$product_size, $product_size_price, $product_size_cost, $product_id]);
+
+        $_SESSION['success_message'] = "Product successfully updated.";
+    } catch (PDOException $e) {
+        $_SESSION['error_message'] = "Database error: " . $e->getMessage();
     }
 
     header("Location: ../manage-products.php");
     exit;
 }
-
-?>
