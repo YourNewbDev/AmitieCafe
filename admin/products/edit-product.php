@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['product_id'])) {
             }
 
             // Update the tblproductsize table with new size, price, and cost for the product size
-            $sql3 = "UPDATE tblproductsize SET product_size = ?, product_size_price = ?, product_size_cost = ? WHERE product_id = ?";
+            $sql3 = "UPDATE tblproductsize SET product_size = ?, product_size_price = ?, product_size_cost = ? WHERE product_id = ? AND product_size";
             $stmt = $pdo->prepare($sql3);
             $stmt->execute([$product_size, $product_size_price, $product_size_cost, $product_id]);
 
