@@ -16,7 +16,17 @@ try {
     WHERE pr.productorder_status = 'ORDERED' AND DATE(ord.created_at) = CURRENT_DATE");
 
     $stmt->execute();
-    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $ordered_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmt = $pdo->query("SHOW COLUMNS FROM tblproductorder WHERE Field = 'productorder_status'");
+    $productorder_status = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($productorder_status && isset($productorder_status['Type'])) {
+        // Extract ENUM values
+        preg_match("/^enum\((.*)\)$/", $productorder_status['Type'], $matches);
+        // Parse ENUM values
+        $enumValues = str_getcsv($matches[1], ",", "'");
+    }
 } catch (PDOException $err) {
     die("Query failed: " . $err->getMessage());
 }
@@ -63,7 +73,18 @@ try {
     <div class="container mt-5">
         <h2 class="mb-4 text-custom">Orders List</h2>
 
-        <a class="btn btn-primary mb-3" href="pos.php">Add Order</a>
+        <div class="d-flex justify-content-between mb-3">
+            <a class="btn btn-primary" href="pos.php">Add Order</a>
+            <form method="get" class="d-flex">
+                <select name="sort" class="form-select" onchange="this.form.submit()">
+                    <option value="">Filter by</option>
+                    <?php foreach ($enumValues as $values) : ?>
+                    <option value="<?= $values?>"><?= htmlspecialchars($values)?></option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
+        </div>
+
 
         <div class="table-responsive">
             <table id="ordersTable" class="table">
@@ -77,7 +98,7 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($orders as $order) : ?>
+                    <?php foreach ($ordered_list as $order) : ?>
                     <tr>
                         <td class="text-center"><?= htmlspecialchars($order['created_at']) ?></td>
                         <td class="text-center"><?= htmlspecialchars($order['order_id']) ?></td>
