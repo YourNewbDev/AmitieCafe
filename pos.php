@@ -264,7 +264,7 @@ foreach ($categories as $category) {
                 $totalCart = $stmt->fetch();
                 ?>
                 <h3 class="fw-bold">Total:</h3>
-                <h3 class="fw-bold" id="totalPrice">₱<?= $totalCart['total_cart']; ?></h3>
+                <h3 class="fw-bold" id="totalPrice">₱<?= $totalCart['total_cart'] ? $totalCart['total_cart'] : "0.00"; ?></h3>
             </div>
 
 
@@ -315,7 +315,7 @@ foreach ($categories as $category) {
                                     <?php endforeach; ?>
                                 </select>
                                 <br>
-                                <!-- CASH -->
+        
                                 <div id="payment">
                                     <label class="form-label fs-5">Amount Received:</label>
                                     <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="0.00" required>

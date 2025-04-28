@@ -46,6 +46,22 @@ $(document).ready(function() {
     });
 });
 
+$(document).ready(function() {
+    if ($.fn.DataTable.isDataTable('#ordersTable')) {
+        $('#ordersTable').DataTable().destroy();
+    }
+
+    var table = $('#ordersTable').DataTable({
+        "paging": true,
+        "pageLength": 5, 
+        "lengthChange": false, 
+        "searching": true, 
+        "ordering": true, 
+        "info": true, 
+        "autoWidth": true,
+    });
+});
+
 function blockInvalidInput(event) {
     if (["e", "E", "+", "-"].includes(event.key)) {
         event.preventDefault();

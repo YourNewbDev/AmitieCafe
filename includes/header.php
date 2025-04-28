@@ -41,7 +41,7 @@ if (!isset($pageTitle)) {
         <img src="/AmitieCafe/assets/image/Amitie-white.png" alt="Amitie Cafe Logo" class="mb-3" />
         <ul class="nav flex-column flex-grow-1">
           <li class="nav-item"><a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>pos.php">POS</a></li>
-          <li class="nav-item"><a class="nav-link text-white fw-bold" href="#">Orders</a></li>
+          <li class="nav-item"><a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>order.php">Orders</a></li>
 
           <?php if ($_SESSION['user_role'] === "OWNER") : ?>
             <li class="nav-item">
@@ -91,7 +91,7 @@ if (!isset($pageTitle)) {
             <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>pos.php" data-bs-dismiss="offcanvas">POS</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white fw-bold" href="#" data-bs-dismiss="offcanvas">Orders</a>
+            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>order.php" data-bs-dismiss="offcanvas">Orders</a>
           </li>
 
           <?php if ($_SESSION['user_role'] === "OWNER") : ?>
