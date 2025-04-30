@@ -16,15 +16,22 @@ try {
 
     if ($filter == "RECEIVED") {
         $status = "WHERE pr.productorder_status = 'RECEIVED'";
-    }
-    elseif ($filter == "CANCELLED") {
+    } elseif ($filter == "CANCELLED") {
         $status = "WHERE pr.productorder_status = 'CANCELLED'";
     }
 
     $stmt = $pdo->prepare("SELECT ord.*, pr.*, p.* FROM tblorder AS ord
-    INNER JOIN tblproductorder AS pr ON pr.productorder_id = ord.order_id
-    INNER JOIN tblpayment AS p ON p.payment_id = ord.order_id
+    INNER JOIN tblproductorder AS pr ON pr.order_id = ord.order_id
+    INNER JOIN tblpayment AS p ON p.payment_id = ord.payment_id
     $status AND DATE(ord.created_at) = CURRENT_DATE ORDER BY created_at ASC");
+
+    // $stmt = $pdo->prepare("SELECT ord.*, pr.*, p.*
+    // FROM tblorder AS ord
+    // INNER JOIN tblproductorder AS pr ON pr.order_id = ord.order_id
+    // INNER JOIN tblpayment AS p ON p.payment_id = ord.payment_id
+    // $status
+    // AND DATE(ord.created_at) = CURRENT_DATE
+    // ORDER BY ord.created_at ASC");
 
     $stmt->execute();
     $ordered_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -90,7 +97,7 @@ try {
                 <select name="filter" class="form-select" onchange="this.form.submit()">
                     <option value="">Filter by</option>
                     <?php foreach ($enumValues as $values) : ?>
-                    <option value="<?= $values?>"><?= htmlspecialchars($values)?></option>
+                        <option value="<?= $values ?>"><?= htmlspecialchars($values) ?></option>
                     <?php endforeach; ?>
                 </select>
             </form>
@@ -110,26 +117,26 @@ try {
                 </thead>
                 <tbody>
                     <?php foreach ($ordered_list as $order) : ?>
-                    <tr>
-                        <td class="text-center"><?= date("Y-m-d", strtotime($order['created_at'])) ?></td>
-                        <td class="text-center"><?= htmlspecialchars($order['order_id']) ?></td>
-                        <td class="text-center"><?= htmlspecialchars($order['productorder_status']) ?></td>
-                        <td class="text-center"><?= htmlspecialchars($order['user_id']) ?></td>
-                        <td class="text-center">
-                            <div class="">
-                                <button type="button" class="btn edit-btn" data-bs-toggle="modal" data-bs-target="#editCategoryModal"
-                                    data-bs-category-id="<?= $category['category_id'] ?>"
-                                    data-bs-category-name="<?= htmlspecialchars($category['category_name']) ?>">
-                                    <img src="./assets/image/edit.svg" alt="Edit" class="" style="max-width: 2em;">
-                                </button>
-                                <button type="button" class="btn delete-btn" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal"
-                                    data-bs-category-id="<?= $category['category_id'] ?>"
-                                    data-bs-category-name="<?= htmlspecialchars($category['category_name']) ?>">
-                                    <img src="./assets/image/delete.svg" alt="Delete" class="img-responsive" style="max-width: 2em;">
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="text-center"><?= date("Y-m-d", strtotime($order['created_at'])) ?></td>
+                            <td class="text-center"><?= htmlspecialchars($order['order_id']) ?></td>
+                            <td class="text-center"><?= htmlspecialchars($order['productorder_status']) ?></td>
+                            <td class="text-center"><?= htmlspecialchars($order['user_id']) ?></td>
+                            <td class="text-center">
+                                <div class="">
+                                    <button type="button" class="btn edit-btn" data-bs-toggle="modal" data-bs-target="#editCategoryModal"
+                                        data-bs-category-id="<?= $category['category_id'] ?>"
+                                        data-bs-category-name="<?= htmlspecialchars($category['category_name']) ?>">
+                                        <img src="./assets/image/edit.svg" alt="Edit" class="" style="max-width: 2em;">
+                                    </button>
+                                    <button type="button" class="btn delete-btn" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal"
+                                        data-bs-category-id="<?= $category['category_id'] ?>"
+                                        data-bs-category-name="<?= htmlspecialchars($category['category_name']) ?>">
+                                        <img src="./assets/image/delete.svg" alt="Delete" class="img-responsive" style="max-width: 2em;">
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
