@@ -1,6 +1,11 @@
 <?php include "includes/header.php"; ?>
 
 <?php
+$success_message = $_SESSION['success_message'] ?? null;
+$error_message = $_SESSION['error_message'] ?? null;
+unset($_SESSION['success_message'], $_SESSION['error_message']);
+
+
 // Fetch all categories
 $stmt = $pdo->prepare("SELECT * FROM tblcategory");
 $stmt->execute();
@@ -30,6 +35,41 @@ foreach ($categories as $category) {
 <div class="main-content">
     <div class="row g-0">
         <main class="col-md-7 d-flex flex-column flex-grow-1 overflow-auto vh-100">
+            <!-- Success Modal -->
+            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-success" id="successModalLabel">Success</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <?= htmlspecialchars($success_message) ?>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Modal -->
+            <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-danger" id="errorModalLabel">Error</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <?= htmlspecialchars($error_message) ?>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Category Buttons -->
             <h4 class="mt-4 text-primary text-center">Categories</h4>
             <div class="scrollable-menu pt-2 me-5">
@@ -315,7 +355,7 @@ foreach ($categories as $category) {
                                     <?php endforeach; ?>
                                 </select>
                                 <br>
-        
+
                                 <div id="payment">
                                     <label class="form-label fs-5">Amount Received:</label>
                                     <input type="number" name="payment_amount_paid" class="form-control mb-2 fs-5" placeholder="0.00" required>
@@ -364,24 +404,35 @@ foreach ($categories as $category) {
 </div>
 
 <script>
-    let calcDisplay = document.getElementById('calc-display');
-    let currentInput = '';
+    document.addEventListener("DOMContentLoaded", function() {
+        <?php if ($success_message) : ?>
+            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+        <?php endif; ?>
 
-    function handleCalc(value) {
-        if (value === 'C') {
-            currentInput = '';
-        } else if (value === '=') {
-            try {
-                currentInput = eval(currentInput).toString();
-            } catch (e) {
-                currentInput = 'Error';
+        <?php if ($error_message) : ?>
+            var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        <?php endif; ?>
+        let calcDisplay = document.getElementById('calc-display');
+        let currentInput = '';
+
+        function handleCalc(value) {
+            if (value === 'C') {
+                currentInput = '';
+            } else if (value === '=') {
+                try {
+                    currentInput = eval(currentInput).toString();
+                } catch (e) {
+                    currentInput = 'Error';
+                }
+            } else {
+                currentInput += value;
             }
-        } else {
-            currentInput += value;
-        }
 
-        calcDisplay.value = currentInput;
-    }
+            calcDisplay.value = currentInput;
+        }
+    })
 </script>
 
 <?php include "includes/footer.php"; ?>

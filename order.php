@@ -1,9 +1,9 @@
 <?php
 
 $required_role = "OWNER";
-require __DIR__ . './actions/auth.php';
+require __DIR__ . '/./actions/auth.php';
 
-include __DIR__ . "./includes/header.php";
+include __DIR__ . "/./includes/header.php";
 
 $success_message = $_SESSION['success_message'] ?? null;
 $error_message = $_SESSION['error_message'] ?? null;
@@ -343,7 +343,7 @@ try {
     </div>
 </div>
 
-<?php include __DIR__ . "./includes/footer.php"; ?>
+<?php include __DIR__ . "/./includes/footer.php"; ?>
 <!-- Auto Trigger Modal if a message exists -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -356,104 +356,6 @@ try {
             var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
             errorModal.show();
         <?php endif; ?>
-
-        // Convert the PHP array into JSON format which JS understands
-        const allSubcategories = <?php echo json_encode($subcategories); ?>
-
-        // Reference for the select id's
-        const categorySelect = document.getElementById("category_id");
-        const subcategorySelect = document.getElementById("subcategory_id");
-        const editCategorySelect = document.getElementById("editCategoryId");
-        const editSubcategorySelect = document.getElementById("editSubcategoryId");
-
-        // If user changes category it calls loadSubcategories function to update the corresponding subcategories
-        categorySelect.addEventListener("change", function() {
-            loadSubcategories(categorySelect, subcategorySelect);
-        });
-
-        // If user changes category it calls loadSubcategories function to update the corresponding subcategories
-        editCategorySelect.addEventListener("change", function() {
-            loadSubcategories(editCategorySelect, editSubcategorySelect);
-        });
-
-        // Function to load subcategories based on selected category
-        function loadSubcategories(categorySelect, subcategorySelect) {
-            // Stores the selected category 
-            const selectedCategoryId = categorySelect.value;
-
-            // Clears the options back to default value in subcategory when a category selected changes
-            subcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
-            subcategorySelect.disabled = true;
-
-            // Checks if a selected category is not empty and executes insides the statement and filters the matching subcategoryies
-            if (selectedCategoryId) {
-                // Filters the subcategory array based on selected category_id
-                const filteredSubcategories = allSubcategories.filter(sub => sub.category_id === selectedCategoryId);
-
-                // Begins a loop over the filtered subcategories array and iterates through each subcategory in the array
-                // and sub refers to the current subcategory being processed in the loop
-                filteredSubcategories.forEach(sub => {
-                    // Will create the subcategory based on the selected category
-                    const option = document.createElement("option");
-                    option.value = sub.subcategory_id;
-                    option.textContent = sub.subcategory_name;
-                    subcategorySelect.appendChild(option);
-                });
-
-                // Checks if there are any subcategories that match the selected category
-                if (filteredSubcategories.length > 0) {
-                    subcategorySelect.disabled = false;
-                }
-            }
-        }
-
-        // Triggers edit modal to auto load subcategories in selected category
-        const openEditModal = () => {
-            const categoryId = document.getElementById("editCategoryId").value;
-
-            if (categoryId) {
-                loadSubcategories(editCategorySelect, editSubcategorySelect);
-            }
-        }
-
-        // calls openEditModal function when its opened
-        const editModal = document.getElementById("editProductModal");
-        if (editModal) {
-            editModal.addEventListener('show.bs.modal', openEditModal);
-        }
-
-        document.body.addEventListener("click", function(event) {
-            if (event.target.closest(".delete-btn")) {
-                let button = event.target.closest(".delete-btn");
-                let productId = button.getAttribute("data-bs-product-id");
-                let productName = button.getAttribute("data-bs-product-name");
-
-                document.getElementById("deleteProductId").value = productId;
-                document.getElementById("deleteProductName").textContent = productName;
-            }
-
-            if (event.target.closest(".edit-btn")) {
-                let button = event.target.closest(".edit-btn");
-                let productId = button.getAttribute("data-bs-product-id");
-                let productName = button.getAttribute("data-bs-product-name");
-                let categoryId = button.getAttribute("data-bs-category-id");
-                let subcategoryId = button.getAttribute("data-bs-subcategory-id");
-                let productDesc = button.getAttribute("data-bs-product-desc");
-                let productPrice = button.getAttribute("data-bs-product-price");
-                let productCost = button.getAttribute("data-bs-product-cost");
-                let productSizeId = button.getAttribute("data-bs-product-size-id");
-
-                document.getElementById("editProductId").value = productId;
-                document.getElementById("editProductName").value = productName;
-                document.getElementById("editCategoryId").value = categoryId;
-                document.getElementById("editSubcategoryId").value = subcategoryId;
-                document.getElementById("editProductDesc").value = productDesc;
-                document.getElementById("editProductPrice").value = productPrice;
-                document.getElementById("editProductCost").value = productCost;
-                document.getElementById("editProductSizeId").value = productSizeId;
-
-            }
-        });
 
     });
 </script>

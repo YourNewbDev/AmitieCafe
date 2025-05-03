@@ -53,7 +53,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $stmt_cart = $pdo->prepare("DELETE FROM tblcart");
         $stmt_cart->execute();
-    } catch (\Throwable $th) {
-        //throw $th;
+
+        $_SESSION['success_message'] = "Order has been processed and the order# is {$order_id}";
+    } catch (PDOException $err) {
+        $_SESSION['error_message'] = "There was an error processing the order " . $err->getMessage();
+        header("Location: ../pos.php?error=Invalid request");
+        exit;
+
     }
+
+    header("Location: ../order.php");
+    exit;
 }
