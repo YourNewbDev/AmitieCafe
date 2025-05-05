@@ -66,7 +66,7 @@ if (!isset($pageTitle)) {
 
           <!-- Push-down items -->
           <li class="nav-item mt-auto">
-            <a class="nav-link text-white fw-bold" href="#">Settings</a>
+            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>setting.php">Settings</a>
           </li>
           <li class="nav-item">
             <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>actions/logout.php">Logout</a>
@@ -119,7 +119,7 @@ if (!isset($pageTitle)) {
         <!-- Pushed to the bottom -->
         <ul class="nav flex-column mt-auto">
           <li class="nav-item">
-            <a class="nav-link text-white fw-bold" href="#" data-bs-dismiss="offcanvas">Settings</a>
+            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>setting.php" data-bs-dismiss="offcanvas">Logout</a>
           </li>
           <li class="nav-item">
             <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>actions/logout.php" data-bs-dismiss="offcanvas">Logout</a>
