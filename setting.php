@@ -1,13 +1,16 @@
 <?php
 
-require __DIR__ . '/./actions/auth.php';
+session_start();
 
-include __DIR__ . "/./includes/header.php";
+require_once 'config/database.php';
+
+require __DIR__ . '/./actions/auth.php';
 
 $user_id = $_SESSION['user_id'];
 $success_message = $_SESSION['success_message'] ?? null;
 $error_message = $_SESSION['error_message'] ?? null;
 unset($_SESSION['success_message'], $_SESSION['error_message']);
+$errors = [];
 
 try {
     $stmt_fetch_user = $pdo->prepare('SELECT * FROM tbluser
@@ -18,30 +21,85 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $user_firstName = $_POST["user_firstName"] ?? null;
         $user_lastName = $_POST["user_lastName"] ?? null;
-        $hashed_password = $user['password'];
-        $password = $_POST['password'] ?? null;
-        $confirm_password = $_POST['confirm_password'] ?? null;
+        $hashed_password = $user['user_password'];
+        $current_password = $_POST['current_password'] ?? null;
+        $new_password = $_POST['new_password'] ?? null;
+        $confirm_new_password = $_POST['confirm_new_password'] ?? null;
         $user_email = $_POST["user_email"] ?? null;
         $user_confirm_email = $_POST["user_confirm_email"] ?? null;
-        $phone = $_POST["phone_no"] ?? null;
+        $phone = $_POST["phone"] ?? null;
 
-        if($password === $confirm_password) {
-            if(password_verify($password, $hashed_password)) {
+        if (empty($user_firstName) || ctype_space($user_firstName)) {
+            $errors[] = "Please enter first name";
+        }
 
+        if (empty($user_lastName) || ctype_space($user_lastName)) {
+            $errors[] = "Please enter last name";
+        }
+
+        if (empty($user_email) || ctype_space($user_email) || !filter_var($user_email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "Email is empty or invalid";
+        }
+
+        if (empty($user_confirm_email) || $user_email !== $user_confirm_email) {
+            $errors[] = "Emails do not match";
+        }
+        
+        if (empty($phone)) {
+            $errors[] = "Phone number is required";
+        } elseif (!preg_match('/^\d{7,11}$/', $phone)) {
+            $errors[] = "Phone number must be 7 to 11 digits with no spaces or symbols";
+        }
+
+        if (!empty($new_password) || !empty($confirm_new_password)) {
+            if (empty($current_password) || ctype_space($current_password)) {
+                $errors[] = "Please enter your current password to change your password";
+            } elseif (!password_verify($current_password, $hashed_password)) {
+                $errors[] = "Incorrect current password";
+            }
+        
+            if ($new_password !== $confirm_new_password) {
+                $errors[] = "New passwords do not match";
             }
         }
 
+        if (!empty($errors)) {
+            $error_message = implode("<br>", $errors);
+        } else {
+            $updated_password = $user['user_password'];
+
+            if(!empty($new_password)) {
+                $updated_password = password_hash($new_password, PASSWORD_DEFAULT);
+            }
+
+            $stmt_update_user = $pdo->prepare('UPDATE tbluser
+                                            SET user_firstName = ?,
+                                            user_lastName = ?,
+                                            user_email = ?,
+                                            user_phone = ?,
+                                            user_password = ?,
+                                            updated_at = NOW()
+                                            WHERE user_id = ?');
+            $stmt_update_user->execute([
+                $user_firstName,
+                $user_lastName,
+                $user_email,
+                $phone,
+                $updated_password,
+                $user_id
+            ]);
+
+            $_SESSION['success_message'] = 'Profile updated successfully.';
+            header("Location: /AmitieCafe/setting.php");
+            exit;
+        }
     }
 
 } catch (PDOException $err) {
     die("Query failed: " . $err->getMessage());
 }
 
-
-// Fetch from Table to Modal
-$selected_subcategory = $_POST['subcategory_id'] ?? null;
-$selected_category = $_POST['category_id'] ?? null;
-$selected_product_size = $_POST['product_size_id'] ?? null;
+include __DIR__ . "/./includes/header.php";
 
 ?>
 
@@ -74,7 +132,7 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <?= htmlspecialchars($error_message) ?>
+                    <?=$error_message; ?>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
@@ -104,18 +162,26 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                     <label class="form-label text-white fw-bold">Last Name</label>
                     <input class="form-control" name="user_lastName" type="text" value="<?= htmlspecialchars($user['user_lastName'])?>" placeholder="Last Name" required>
                 </div>
-            </div>
-            <div class="d-flex justify-content-evenly mb-4">
                 <div class="d-flex flex-column me-3">
-                    <label class="form-label text-white fw-bold">Password</label>
-                    <input class="form-control" name="password" type="password" placeholder="********" required>
-                </div>
-                <div class="d-flex flex-column me-3">
-                    <label class="form-label text-white fw-bold">Confirm Password</label>
-                    <input class="form-control" name="confirm_password" type="password" placeholder="********" required>
+                    <label class="form-label text-white fw-bold">Phone No.</label>
+                    <input class="form-control" name="phone" type="number" value="<?= htmlspecialchars($user['user_phone']) ?>" placeholder="Phone No." required>
                 </div>
             </div>
             <div class="d-flex justify-content-evenly mb-4">
+            <div class="d-flex flex-column me-3">
+                    <label class="form-label text-white fw-bold">Current Password</label>
+                    <input class="form-control" name="current_password" type="password" placeholder="********">
+                </div>
+                <div class="d-flex flex-column me-3">
+                    <label class="form-label text-white fw-bold"> New Password</label>
+                    <input class="form-control" name="new_password" type="password" placeholder="********">
+                </div>
+                <div class="d-flex flex-column me-3">
+                    <label class="form-label text-white fw-bold">Confirm New Password</label>
+                    <input class="form-control" name="confirm_new_password" type="password" placeholder="********">
+                </div>
+            </div>
+            <div class="d-flex justify-content-evenly mb-5">
                 <div class="d-flex flex-column me-3">
                     <label class="form-label text-white fw-bold">Email Address</label>
                     <input class="form-control" name="user_email" type="email" value="<?= htmlspecialchars($user['user_email']) ?>" placeholder="email@example.com" required>
@@ -123,12 +189,6 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                 <div class="d-flex flex-column me-3">
                     <label class="form-label text-white fw-bold">Confirm Email Address</label>
                     <input class="form-control" name="user_confirm_email" type="email" value="<?= htmlspecialchars($user['user_email']) ?>" placeholder="email@example.com" required>
-                </div>
-            </div>
-            <div class="d-flex justify-content-evenly mb-5">
-                <div class="d-flex flex-column me-3">
-                    <label class="form-label text-white fw-bold">Phone No.</label>
-                    <input class="form-control" name="phone" type="number" value="<?= htmlspecialchars($user['user_phone']) ?>" placeholder="Phone No." required>
                 </div>
                 <div class="d-flex flex-column me-3">
                     <label class="form-label text-white fw-bold">Last Updated</label>
