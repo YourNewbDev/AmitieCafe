@@ -41,9 +41,10 @@ if (!isset($pageTitle)) {
         <img src="/AmitieCafe/assets/image/Amitie-white.png" alt="Amitie Cafe Logo" class="mb-3" />
         <ul class="nav flex-column flex-grow-1">
           <li class="nav-item"><a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>pos.php">POS</a></li>
-          <li class="nav-item"><a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>order.php">Orders</a></li>
+          <li class="nav-item"><a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>order.php">Orders</a>
+          </li>
 
-          <?php if ($_SESSION['user_role'] === "OWNER") : ?>
+          <?php if ($_SESSION['user_role'] === "OWNER"): ?>
             <li class="nav-item">
               <a class="nav-link text-white fw-bold" href="#">Dashboard</a>
             </li>
@@ -51,18 +52,20 @@ if (!isset($pageTitle)) {
               <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>admin/manage-products.php">Products</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>admin/manage-categories.php">Categories</a>
+              <a class="nav-link text-white fw-bold"
+                href="<?php echo BASE_URL; ?>admin/manage-categories.php">Categories</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>admin/manage-subcategories.php">Subcategories</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white fw-bold" href="#">Inventory</a>
+              <a class="nav-link text-white fw-bold"
+                href="<?php echo BASE_URL; ?>admin/manage-subcategories.php">Subcategories</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-white fw-bold" href="#">Reports</a>
             </li>
           <?php endif; ?>
+          <li class="nav-item">
+            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>inventory.php">Inventory</a>
+          </li>
 
           <!-- Push-down items -->
           <li class="nav-item mt-auto">
@@ -88,13 +91,15 @@ if (!isset($pageTitle)) {
         <!-- Main nav section (flex-grow-1 to take up remaining space) -->
         <ul class="nav flex-column flex-grow-1">
           <li class="nav-item">
-            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>pos.php" data-bs-dismiss="offcanvas">POS</a>
+            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>pos.php"
+              data-bs-dismiss="offcanvas">POS</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>order.php" data-bs-dismiss="offcanvas">Orders</a>
+            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>order.php"
+              data-bs-dismiss="offcanvas">Orders</a>
           </li>
 
-          <?php if ($_SESSION['user_role'] === "OWNER") : ?>
+          <?php if ($_SESSION['user_role'] === "OWNER"): ?>
             <li class="nav-item">
               <a class="nav-link text-white fw-bold" href="#" data-bs-dismiss="offcanvas">Dashboard</a>
             </li>
@@ -102,27 +107,31 @@ if (!isset($pageTitle)) {
               <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>admin/manage-products.php">Products</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>admin/manage-categories.php">Categories</a>
+              <a class="nav-link text-white fw-bold"
+                href="<?php echo BASE_URL; ?>admin/manage-categories.php">Categories</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>admin/manage-subcategories.php">Subcategories</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white fw-bold" href="#" data-bs-dismiss="offcanvas">Inventory</a>
+              <a class="nav-link text-white fw-bold"
+                href="<?php echo BASE_URL; ?>admin/manage-subcategories.php">Subcategories</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-white fw-bold" href="#" data-bs-dismiss="offcanvas">Reports</a>
             </li>
           <?php endif; ?>
+          <li class="nav-item">
+            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>inventory.php">Inventory</a>
+          </li>
         </ul>
 
         <!-- Pushed to the bottom -->
         <ul class="nav flex-column mt-auto">
           <li class="nav-item">
-            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>setting.php" data-bs-dismiss="offcanvas">Logout</a>
+            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>setting.php"
+              data-bs-dismiss="offcanvas">Logout</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>actions/logout.php" data-bs-dismiss="offcanvas">Logout</a>
+            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>actions/logout.php"
+              data-bs-dismiss="offcanvas">Logout</a>
           </li>
         </ul>
       </div>
