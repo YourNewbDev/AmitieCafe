@@ -60,7 +60,7 @@ if (!isset($pageTitle)) {
                 href="<?php echo BASE_URL; ?>admin/manage-subcategories.php">Subcategories</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white fw-bold" href="#">Reports</a>
+              <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>report.php">Reports</a>
             </li>
           <?php endif; ?>
           <li class="nav-item">
@@ -94,13 +94,12 @@ if (!isset($pageTitle)) {
             <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>pos.php">POS</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>order.php"
-              data-bs-dismiss="offcanvas">Orders</a>
+            <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>order.php">Orders</a>
           </li>
 
           <?php if ($_SESSION['user_role'] === "OWNER"): ?>
             <li class="nav-item">
-              <a class="nav-link text-white fw-bold" href="#" data-bs-dismiss="offcanvas">Dashboard</a>
+              <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>dashboard.php">Dashboard</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>admin/manage-products.php">Products</a>
@@ -114,7 +113,7 @@ if (!isset($pageTitle)) {
                 href="<?php echo BASE_URL; ?>admin/manage-subcategories.php">Subcategories</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white fw-bold" href="#" data-bs-dismiss="offcanvas">Reports</a>
+              <a class="nav-link text-white fw-bold" href="<?php echo BASE_URL; ?>report.php">Reports</a>
             </li>
           <?php endif; ?>
           <li class="nav-item">
