@@ -32,6 +32,10 @@ try {
     $stmt_total_sale->execute();
     $total_sale = $stmt_total_sale->fetch();
 
+    $stmt_total_order = $pdo->prepare("SELECT COUNT(*) AS total_order FROM tblorder");
+    $stmt_total_order->execute();
+    $total_order = $stmt_total_order->fetch();
+
     $stmt_sale_per_day = $pdo->prepare("SELECT ROUND(SUM(daily_total) / COUNT(DISTINCT order_date), 2) AS avg_sales_per_day
     FROM (
         SELECT DATE(o.created_at) AS order_date,
@@ -150,8 +154,8 @@ try {
             <div class="col">
                 <div class="card bg-custom h-100">
                     <div class="card-body text-white text-center">
-                        <h5 class="card-header">Overall Sale</h5>
-                        <h4>₱<?php echo number_format($total_sale['total_sale'], 2) ?></h4>
+                        <h5 class="card-header">Total Orders</h5>
+                        <h4><?php echo number_format($total_order['total_order']) ?></h4>
                     </div>
                 </div>
             </div>
@@ -160,9 +164,8 @@ try {
             <div class="col">
                 <div class="card bg-custom h-100">
                     <div class="card-body text-white text-center">
-                        <h5 class="card-header">Card title</h5>
-                        <p class="card-text"></p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                        <h5 class="card-header">Total Sales</h5>
+                        <h4>₱<?php echo number_format($total_sale['total_sale'], 2) ?></h4>
                     </div>
                 </div>
             </div>
