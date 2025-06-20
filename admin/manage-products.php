@@ -258,7 +258,7 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-            <form method="POST" action="/AmitieCafe/admin/products/edit-product.php">
+                <form method="POST" action="/AmitieCafe/admin/products/edit-product.php">
                     <div class="mb-3">
                         <label class="form-label">Name</label>
                         <input type="text" class="form-control" name="product_name" id="editProductName" required>
@@ -283,7 +283,7 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                             <div class="col-md-6">
                                 <label class="form-label">Subcategory</label>
                                 <div class="d-flex">
-                                    <select class="form-control" name="subcategory_id" id="editSubcategoryId" required disabled>
+                                    <select class="form-control" name="subcategory_id" id="editSubcategoryId" required>
                                         <option value="">Select a subcategory</option>
                                         <?php foreach ($subcategories as $subcategory) : ?>
                                             <option value="<?= $subcategory['subcategory_id'] ?>">
@@ -385,12 +385,12 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
         const editSubcategorySelect = document.getElementById("editSubcategoryId");
 
         // If user changes category it calls loadSubcategories function to update the corresponding subcategories
-        categorySelect.addEventListener("change", function(){
+        categorySelect.addEventListener("change", function() {
             loadSubcategories(categorySelect, subcategorySelect);
         });
 
         // If user changes category it calls loadSubcategories function to update the corresponding subcategories
-        editCategorySelect.addEventListener("change", function(){
+        editCategorySelect.addEventListener("change", function() {
             loadSubcategories(editCategorySelect, editSubcategorySelect);
         });
 
@@ -401,7 +401,6 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
 
             // Clears the options back to default value in subcategory when a category selected changes
             subcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
-            subcategorySelect.disabled = true;
 
             // Checks if a selected category is not empty and executes insides the statement and filters the matching subcategoryies
             if (selectedCategoryId) {
@@ -425,20 +424,23 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
             }
         }
 
-        // Triggers edit modal to auto load subcategories in selected category
         const openEditModal = () => {
             const categoryId = document.getElementById("editCategoryId").value;
+            const subcategoryId = document.getElementById("editSubcategoryId").getAttribute('data-selected-subcategory');
 
-            if(categoryId) {
+            if (categoryId) {
                 loadSubcategories(editCategorySelect, editSubcategorySelect);
-            }
-        }
 
-        // calls openEditModal function when its opened
-        const editModal = document.getElementById("editProductModal");
-        if (editModal) {
-            editModal.addEventListener('show.bs.modal', openEditModal);
-        }
+                // Wait a tiny bit for subcategories to load, then set selected subcategory
+                setTimeout(() => {
+                    if (subcategoryId) {
+                        editSubcategorySelect.value = subcategoryId;
+                        editSubcategorySelect.disabled = false;
+                    }
+                }, 50); // small delay to make sure loadSubcategories finished
+            }
+        };
+
 
         document.body.addEventListener("click", function(event) {
             if (event.target.closest(".delete-btn")) {
@@ -464,13 +466,13 @@ $selected_product_size = $_POST['product_size_id'] ?? null;
                 document.getElementById("editProductId").value = productId;
                 document.getElementById("editProductName").value = productName;
                 document.getElementById("editCategoryId").value = categoryId;
-                document.getElementById("editSubcategoryId").value = subcategoryId;
+                document.getElementById("editSubcategoryId").setAttribute('data-selected-subcategory', subcategoryId); // <<< Save temporarily here
                 document.getElementById("editProductDesc").value = productDesc;
                 document.getElementById("editProductPrice").value = productPrice;
                 document.getElementById("editProductCost").value = productCost;
                 document.getElementById("editProductSizeId").value = productSizeId;
-                
             }
+
         });
 
     });

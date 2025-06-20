@@ -85,6 +85,11 @@
     background-color: #4A6A8C;
     color: white;
 }
+
+.custom-text {
+    color: white;
+}
+
 .custom-btn:hover {
     background-color: #4A6A8C;
     color: white;
